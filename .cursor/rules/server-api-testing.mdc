@@ -1,0 +1,20 @@
+---
+description: Aturan test untuk server API dan perubahan backend
+globs: server/**/*
+alwaysApply: false
+---
+
+# Server API — Test & Safety
+
+Saat mengubah file di `server/`:
+
+1. **Jangan ubah** format `apiSuccess` / `apiError` tanpa update `tests/unit/response.test.ts`
+2. Validasi input pakai **Zod** — tambah test case untuk input invalid
+3. Query Prisma hanya di `server/api/` dan `server/utils/`
+4. Setelah ubah endpoint → jalankan `npm run test` dan `npm run typecheck`
+
+## Checklist perubahan API
+
+- [ ] Response tetap `{ success, message, data? }` atau `{ success, message, errors? }`
+- [ ] Test unit untuk helper/validasi baru
+- [ ] Tidak break endpoint yang sudah dipakai halaman (`/api/products`, `/api/categories`, `/api/health`)

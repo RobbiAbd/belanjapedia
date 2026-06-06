@@ -1,0 +1,46 @@
+---
+description: Wajib unit test agar tidak merusak fungsi yang sudah berjalan
+alwaysApply: true
+---
+
+# Unit Testing — Wajib
+
+Proyek ini dikerjakan oleh banyak orang + AI. **Selalu jalankan dan perbarui unit test** sebelum menyelesaikan task.
+
+## Sebelum selesai (wajib)
+
+1. `npm run test` — semua test harus **lulus**
+2. Jika mengubah logic bisnis → **tulis/update test** di `tests/unit/`
+3. Jika menambah util/composable/API helper → **minimal 1 test** untuk happy path + 1 edge case
+
+## Di mana menulis test
+
+| Kode yang diubah | Lokasi test |
+|------------------|-------------|
+| `shared/utils/**` | `tests/unit/[nama].test.ts` |
+| `server/utils/**` | `tests/unit/[nama].test.ts` |
+| `app/composables/**` | Ekstrak logic ke `shared/utils/`, test di `tests/unit/` |
+| `server/api/**` | Test validasi Zod & response format (unit, tanpa DB jika memungkinkan) |
+
+## Pola yang benar
+
+- Logic bisnis (harga, keranjang, pajak, diskon) → **`shared/utils/`** (pure function, mudah ditest)
+- Composable → tipis, hanya wrap `useState` + panggil `shared/utils`
+- Jangan duplikasi kalkulasi di component; pakai util yang sudah ditest
+
+## Contoh
+
+```ts
+// ❌ BAD — ubah formatPrice tanpa test
+function formatPrice(v: number) { return `Rp ${v}` }
+
+// ✅ GOOD — ubah di shared/utils/price.ts + update tests/unit/price.test.ts
+```
+
+## Perintah
+
+```bash
+npm run test          # jalankan semua
+npm run test:watch    # mode watch
+npx vitest run tests/unit/cart.test.ts  # satu file
+```
