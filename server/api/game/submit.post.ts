@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { z } from 'zod'
+import { calcEarnedCoins } from '#shared/utils/game'
 
 const submitSchema = z.object({
   score: z.number().int().min(0),
@@ -41,7 +42,7 @@ export default defineEventHandler(async (event) => {
   // 1. If user is logged in, calculate and award coins
   if (loggedIn && userId) {
     // Reward calculation: 1 coin per 50 game points, maximum 50 coins per play session
-    earnedCoins = Math.min(50, Math.floor(score / 50))
+    earnedCoins = calcEarnedCoins(score)
 
     if (earnedCoins > 0) {
       const dbUser = await prisma.user.findFirst({
