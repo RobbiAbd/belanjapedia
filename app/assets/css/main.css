@@ -24,3 +24,20 @@
   --color-neutral-700: #404040;
   --color-neutral-900: #171717;
 }
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+.safe-bottom {
+  padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

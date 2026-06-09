@@ -50,8 +50,8 @@ function statusColor(status: string) {
 </script>
 
 <template>
-  <div class="max-w-[1400px] mx-auto px-4 lg:px-6 py-8">
-    <h1 class="text-3xl font-bold text-neutral-900 mb-8">
+  <div class="max-w-[1400px] mx-auto px-4 lg:px-6 py-6 sm:py-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 mb-6 sm:mb-8">
       Pesanan Saya
     </h1>
 

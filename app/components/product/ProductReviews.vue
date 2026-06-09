@@ -133,7 +133,7 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <section class="mt-12 bg-white rounded-2xl shadow-sm p-6 lg:p-8">
+  <section class="mt-8 sm:mt-12 bg-white rounded-2xl shadow-sm p-4 sm:p-6 lg:p-8">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
       <div>
         <h2 class="text-2xl font-bold text-neutral-900">

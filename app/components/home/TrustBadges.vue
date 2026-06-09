@@ -8,8 +8,8 @@ const badges = [
 </script>
 
 <template>
-  <section class="max-w-[1400px] mx-auto px-4 lg:px-6 py-12">
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+  <section class="max-w-[1400px] mx-auto px-4 lg:px-6 py-8 sm:py-12">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       <div
         v-for="badge in badges"
         :key="badge.title"

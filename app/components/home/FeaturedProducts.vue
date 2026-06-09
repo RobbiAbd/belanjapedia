@@ -8,7 +8,7 @@ defineProps<{
 </script>
 
 <template>
-  <section class="max-w-[1400px] mx-auto px-4 lg:px-6 py-12">
+  <section class="max-w-[1400px] mx-auto px-4 lg:px-6 py-8 sm:py-12">
     <div class="flex items-center justify-between mb-8">
       <h2 class="text-2xl lg:text-3xl font-bold text-neutral-900">
         Produk Unggulan

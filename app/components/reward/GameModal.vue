@@ -190,17 +190,17 @@ onUnmounted(() => {
 <template>
   <UModal
     v-model:open="open"
-    :ui="{ content: 'sm:max-w-5xl rounded-3xl overflow-hidden' }"
+    :ui="{ content: 'w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-5xl rounded-2xl sm:rounded-3xl overflow-hidden' }"
   >
     <template #header>
-      <div class="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-neutral-50/50">
-        <div class="flex items-center gap-3">
-          <img src="/images/belanjapedia_icon.png" alt="Logo Kucing" class="size-9 object-contain" />
-          <div>
-            <h2 class="text-xl font-black text-neutral-900 tracking-tight flex items-center gap-1.5">
-              Feline Frenzy <span class="text-xs font-semibold px-2 py-0.5 bg-brand-100 text-brand-700 rounded-full">Mini-Game</span>
+      <div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-100 bg-neutral-50/50 gap-2">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+          <img src="/images/belanjapedia_icon.png" alt="Logo Kucing" class="size-8 sm:size-9 object-contain shrink-0" />
+          <div class="min-w-0">
+            <h2 class="text-base sm:text-xl font-black text-neutral-900 tracking-tight flex flex-wrap items-center gap-1.5">
+              Feline Frenzy <span class="text-[10px] sm:text-xs font-semibold px-2 py-0.5 bg-brand-100 text-brand-700 rounded-full">Mini-Game</span>
             </h2>
-            <p class="text-xs text-neutral-500">Mainkan game, buka lencana, dan dapatkan Koin BelanjaPedia!</p>
+            <p class="text-[11px] sm:text-xs text-neutral-500 line-clamp-2 sm:line-clamp-none">Mainkan game, buka lencana, dan dapatkan Koin BelanjaPedia!</p>
           </div>
         </div>
         <UButton
@@ -216,7 +216,7 @@ onUnmounted(() => {
     <template #body>
       <div class="flex flex-col gap-6 px-1 py-1">
         <!-- Tabs Navigation -->
-        <div class="flex border-b border-neutral-100 px-4 -mt-2">
+        <div class="flex border-b border-neutral-100 px-2 sm:px-4 -mt-2 overflow-x-auto scrollbar-none">
           <button
             v-for="tab in [
               { id: 'game', label: 'Main Game 🎮' },
@@ -225,7 +225,7 @@ onUnmounted(() => {
               { id: 'coins', label: 'Reward Koin 🪙' }
             ]"
             :key="tab.id"
-            class="px-4 py-3 font-semibold text-sm transition-all border-b-2 -mb-[2px]"
+            class="shrink-0 px-3 sm:px-4 py-3 font-semibold text-xs sm:text-sm transition-all border-b-2 -mb-[2px] whitespace-nowrap"
             :class="activeTab === tab.id 
               ? 'border-brand-500 text-brand-600' 
               : 'border-transparent text-neutral-500 hover:text-neutral-900'"
@@ -237,7 +237,7 @@ onUnmounted(() => {
 
         <!-- Tab Body: Game -->
         <div v-show="activeTab === 'game'" class="flex flex-col gap-4">
-          <div class="w-full h-[540px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-800 shadow-inner relative">
+          <div class="w-full h-[min(52vh,420px)] sm:h-[540px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-800 shadow-inner relative">
             <iframe
               v-if="open"
               src="/feline-frenzy.html?v=modal"
@@ -261,8 +261,8 @@ onUnmounted(() => {
             <UIcon name="i-lucide-trophy" class="size-12 text-neutral-300 mx-auto mb-2" />
             <p class="text-sm text-neutral-500">Belum ada skor yang tercatat di papan peringkat.</p>
           </div>
-          <div v-else class="overflow-hidden border border-neutral-200 rounded-2xl">
-            <table class="w-full text-left border-collapse text-sm">
+          <div v-else class="overflow-x-auto border border-neutral-200 rounded-2xl">
+            <table class="w-full min-w-[320px] text-left border-collapse text-sm">
               <thead>
                 <tr class="bg-neutral-50 text-neutral-700 font-semibold border-b border-neutral-200">
                   <th class="py-3.5 px-4 text-center w-16">Rank</th>

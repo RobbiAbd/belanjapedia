@@ -6,8 +6,8 @@ const SEED_TAX_RATE = 0.11
 
 const prisma = new PrismaClient()
 
-function dummyImage(slug: string): string {
-  return `https://picsum.photos/seed/${slug}/600/600`
+function productPhoto(unsplashId: string): string {
+  return `https://images.unsplash.com/${unsplashId}?auto=format&fit=crop&w=800&h=800&q=80`
 }
 
 type ProductSeed = {
@@ -35,8 +35,9 @@ const products: ProductSeed[] = [
     isFeatured: true,
     categorySlug: 'elektronik',
     imageUrls: [
-      dummyImage('headphone-bluetooth-1'),
-      dummyImage('headphone-bluetooth-2')
+      productPhoto('photo-1505740420928-5e560c06d30e'),
+      productPhoto('photo-1434493789847-2f02dc6ca35d'),
+      productPhoto('photo-1546435770-a3e426bf472b')
     ]
   },
   {
@@ -48,7 +49,11 @@ const products: ProductSeed[] = [
     sku: 'KPP-001',
     isFeatured: true,
     categorySlug: 'fashion',
-    imageUrls: [dummyImage('kaos-polos-premium')]
+    imageUrls: [
+      productPhoto('photo-1521572163474-6864f9cf17ab'),
+      productPhoto('photo-1583743814966-8936f5b7be1a'),
+      productPhoto('photo-1576566588028-4147f3842f27')
+    ]
   },
   {
     name: 'Blender Multifungsi',
@@ -60,7 +65,11 @@ const products: ProductSeed[] = [
     sku: 'BLM-002',
     isFeatured: true,
     categorySlug: 'rumah-tangga',
-    imageUrls: [dummyImage('blender-multifungsi')]
+    imageUrls: [
+      productPhoto('photo-1570222094114-d054a817e56b'),
+      productPhoto('photo-1654064754916-e3edeb09c042'),
+      productPhoto('photo-1654179279965-8ff0872d976b')
+    ]
   },
   {
     name: 'Smartwatch Sport',
@@ -72,9 +81,9 @@ const products: ProductSeed[] = [
     isFeatured: true,
     categorySlug: 'elektronik',
     imageUrls: [
-      dummyImage('smartwatch-sport-1'),
-      dummyImage('smartwatch-sport-2'),
-      dummyImage('smartwatch-sport-3')
+      productPhoto('photo-1523275335684-37898b6baf30'),
+      productPhoto('photo-1610945415295-d9bbf067e59c'),
+      productPhoto('photo-1579586337278-3befd40fd17a')
     ]
   },
   {
@@ -85,7 +94,11 @@ const products: ProductSeed[] = [
     stock: 60,
     sku: 'TSC-004',
     categorySlug: 'fashion',
-    imageUrls: [dummyImage('tas-selempang-casual')]
+    imageUrls: [
+      productPhoto('photo-1548036328-c9fa89d128fa'),
+      productPhoto('photo-1553062407-98eeb64c6a62'),
+      productPhoto('photo-1590874103328-eac38a683ce7')
+    ]
   },
   {
     name: 'Set Peralatan Dapur',
@@ -96,7 +109,323 @@ const products: ProductSeed[] = [
     stock: 42,
     sku: 'SPD-005',
     categorySlug: 'rumah-tangga',
-    imageUrls: [dummyImage('set-peralatan-dapur')]
+    imageUrls: [
+      productPhoto('photo-1556911220-bff31c812dba'),
+      productPhoto('photo-1556910103-1c02745aae4d'),
+      productPhoto('photo-1604719312566-8912e9227c6a')
+    ]
+  },
+  {
+    name: 'Speaker Portabel Bluetooth',
+    slug: 'speaker-portabel-bluetooth',
+    description: 'Speaker portable dengan bass kuat, tahan air IPX5, dan playtime hingga 12 jam.',
+    price: 18_500_000,
+    comparePrice: 24_900_000,
+    stock: 45,
+    sku: 'SPB-006',
+    isFeatured: true,
+    categorySlug: 'elektronik',
+    imageUrls: [
+      productPhoto('photo-1558618666-fcd25c85cd64'),
+      productPhoto('photo-1546435770-a3e426bf472b'),
+      productPhoto('photo-1505740420928-5e560c06d30e')
+    ]
+  },
+  {
+    name: 'Power Bank 20000mAh',
+    slug: 'power-bank-20000mah',
+    description: 'Power bank fast charging 22.5W dengan 2 port USB-C dan display LED kapasitas.',
+    price: 12_900_000,
+    stock: 80,
+    sku: 'PBK-007',
+    categorySlug: 'elektronik',
+    imageUrls: [
+      productPhoto('photo-1527864550417-7fd91fc51a46'),
+      productPhoto('photo-1544244015-0df4b3ffc6b0'),
+      productPhoto('photo-1610945415295-d9bbf067e59c')
+    ]
+  },
+  {
+    name: 'Laptop Stand Aluminium',
+    slug: 'laptop-stand-aluminium',
+    description: 'Stand laptop ergonomis bahan aluminium, lipat tipis, cocok untuk 11–17 inci.',
+    price: 9_500_000,
+    comparePrice: 12_900_000,
+    stock: 55,
+    sku: 'LST-008',
+    categorySlug: 'elektronik',
+    imageUrls: [
+      productPhoto('photo-1523275335684-37898b6baf30'),
+      productPhoto('photo-1527864550417-7fd91fc51a46'),
+      productPhoto('photo-1579586337278-3befd40fd17a')
+    ]
+  },
+  {
+    name: 'Jaket Bomber Pria',
+    slug: 'jaket-bomber-pria',
+    description: 'Jaket bomber bahan parasut ringan dengan lining nyaman, cocok untuk gaya kasual.',
+    price: 22_900_000,
+    comparePrice: 29_900_000,
+    stock: 40,
+    sku: 'JBP-009',
+    isFeatured: true,
+    categorySlug: 'fashion',
+    imageUrls: [
+      productPhoto('photo-1551028719-00167b16eac5'),
+      productPhoto('photo-1591047139829-d91aecb6caea'),
+      productPhoto('photo-1521572163474-6864f9cf17ab')
+    ]
+  },
+  {
+    name: 'Sneakers Casual',
+    slug: 'sneakers-casual',
+    description: 'Sneakers kasual unisex dengan sol empuk dan upper breathable mesh.',
+    price: 19_500_000,
+    stock: 65,
+    sku: 'SNC-010',
+    categorySlug: 'fashion',
+    imageUrls: [
+      productPhoto('photo-1549298916-b41d501d3772'),
+      productPhoto('photo-1606107557195-0e29a4b5b4aa'),
+      productPhoto('photo-1542291026-7eec264c27ff')
+    ]
+  },
+  {
+    name: 'Dompet Kulit Premium',
+    slug: 'dompet-kulit-premium',
+    description: 'Dompet lipat bahan kulit sintetis premium dengan 8 slot kartu dan kompartemen uang.',
+    price: 7_500_000,
+    stock: 90,
+    sku: 'DKP-011',
+    categorySlug: 'fashion',
+    imageUrls: [
+      productPhoto('photo-1548036328-c9fa89d128fa'),
+      productPhoto('photo-1590874103328-eac38a683ce7'),
+      productPhoto('photo-1553062407-98eeb64c6a62')
+    ]
+  },
+  {
+    name: 'Vacuum Cleaner Robot',
+    slug: 'vacuum-cleaner-robot',
+    description: 'Robot vacuum dengan navigasi pintar, sedot kuat, dan kontrol via aplikasi.',
+    price: 89_000_000,
+    comparePrice: 115_000_000,
+    stock: 20,
+    sku: 'VCR-012',
+    isFeatured: true,
+    categorySlug: 'rumah-tangga',
+    imageUrls: [
+      productPhoto('photo-1762186540963-efa1702b3379'),
+      productPhoto('photo-1761953881694-b98b238f87bb'),
+      productPhoto('photo-1556911220-e15b29be8c8f')
+    ]
+  },
+  {
+    name: 'Rice Cooker Digital 1.8L',
+    slug: 'rice-cooker-digital',
+    description: 'Penanak nasi digital 1.8 liter dengan 8 menu preset dan timer otomatis.',
+    price: 38_500_000,
+    comparePrice: 49_900_000,
+    stock: 38,
+    sku: 'RCD-013',
+    categorySlug: 'rumah-tangga',
+    imageUrls: [
+      productPhoto('photo-1556911220-e15b29be8c8f'),
+      productPhoto('photo-1564940735784-b15466e8dc09'),
+      productPhoto('photo-1761953881694-b98b238f87bb')
+    ]
+  },
+  {
+    name: 'Set Sprei Queen Size',
+    slug: 'set-sprei-queen-size',
+    description: 'Set sprei queen 4 pcs bahan microfiber lembut, anti kusut, dan mudah dicuci.',
+    price: 15_900_000,
+    stock: 50,
+    sku: 'SSQ-014',
+    categorySlug: 'rumah-tangga',
+    imageUrls: [
+      productPhoto('photo-1522771739844-6a9f6d5f14af'),
+      productPhoto('photo-1556910103-1c02745aae4d'),
+      productPhoto('photo-1604719312566-8912e9227c6a')
+    ]
+  },
+  {
+    name: 'Serum Wajah Glow',
+    slug: 'serum-wajah-glow',
+    description: 'Serum wajah dengan vitamin C dan niacinamide untuk kulit cerah dan lembab.',
+    price: 6_900_000,
+    comparePrice: 9_500_000,
+    stock: 70,
+    sku: 'SWG-015',
+    isFeatured: true,
+    categorySlug: 'kecantikan',
+    imageUrls: [
+      productPhoto('photo-1596462502278-27bfdc403348'),
+      productPhoto('photo-1512496015851-a90fb38ba796'),
+      productPhoto('photo-1583743814966-8936f5b7be1a')
+    ]
+  },
+  {
+    name: 'Lipstik Matte Collection',
+    slug: 'lipstik-matte-collection',
+    description: 'Lipstik matte tahan lama dengan 6 pilihan warna, formula ringan dan tidak crack.',
+    price: 4_500_000,
+    stock: 120,
+    sku: 'LMC-016',
+    categorySlug: 'kecantikan',
+    imageUrls: [
+      productPhoto('photo-1512496015851-a90fb38ba796'),
+      productPhoto('photo-1596462502278-27bfdc403348'),
+      productPhoto('photo-1576566588028-4147f3842f27')
+    ]
+  },
+  {
+    name: 'Kuas Makeup Set 12pcs',
+    slug: 'kuas-makeup-set',
+    description: 'Set kuas makeup 12 pcs dengan bulu sintetis halus dan wadah travel praktis.',
+    price: 5_900_000,
+    stock: 85,
+    sku: 'KMS-017',
+    categorySlug: 'kecantikan',
+    imageUrls: [
+      productPhoto('photo-1512496015851-a90fb38ba796'),
+      productPhoto('photo-1522335780786-8b79dee7a55a'),
+      productPhoto('photo-1596462502278-27bfdc403348')
+    ]
+  },
+  {
+    name: 'Matras Yoga Premium',
+    slug: 'matras-yoga-premium',
+    description: 'Matras yoga anti slip 6mm dengan tekstur nyaman untuk latihan di rumah atau studio.',
+    price: 8_500_000,
+    stock: 48,
+    sku: 'MYP-018',
+    categorySlug: 'olahraga',
+    imageUrls: [
+      productPhoto('photo-1601925260368-ae2f83cf8b7f'),
+      productPhoto('photo-1544367567-0f2fcb009e0b'),
+      productPhoto('photo-1534438327276-14e5300c3a48')
+    ]
+  },
+  {
+    name: 'Sepatu Running Pro',
+    slug: 'sepatu-running-pro',
+    description: 'Sepatu lari dengan cushioning responsif dan upper mesh breathable untuk jarak jauh.',
+    price: 32_500_000,
+    comparePrice: 42_900_000,
+    stock: 36,
+    sku: 'SRP-019',
+    isFeatured: true,
+    categorySlug: 'olahraga',
+    imageUrls: [
+      productPhoto('photo-1542291026-7eec264c27ff'),
+      productPhoto('photo-1606107557195-0e29a4b5b4aa'),
+      productPhoto('photo-1549298916-b41d501d3772')
+    ]
+  },
+  {
+    name: 'Dumbell Set 5kg',
+    slug: 'dumbell-set-5kg',
+    description: 'Pasangan dumbell vinyl 5kg ergonomis, cocok untuk latihan kekuatan di rumah.',
+    price: 14_900_000,
+    stock: 42,
+    sku: 'DBS-020',
+    categorySlug: 'olahraga',
+    imageUrls: [
+      productPhoto('photo-1534438327276-14e5300c3a48'),
+      productPhoto('photo-1544367567-0f2fcb009e0b'),
+      productPhoto('photo-1601925260368-ae2f83cf8b7f')
+    ]
+  },
+  {
+    name: 'Kopi Arabika Premium 250g',
+    slug: 'kopi-arabika-premium',
+    description: 'Biji kopi arabika single origin roasted medium, aroma floral dan rasa seimbang.',
+    price: 5_500_000,
+    comparePrice: 7_500_000,
+    stock: 100,
+    sku: 'KAP-021',
+    isFeatured: true,
+    categorySlug: 'makanan-minuman',
+    imageUrls: [
+      productPhoto('photo-1495474472287-4d71bcdd2085'),
+      productPhoto('photo-1447933601403-0c6688de566e'),
+      productPhoto('photo-1556679343-c7306c1976bc')
+    ]
+  },
+  {
+    name: 'Teh Hijau Organik',
+    slug: 'teh-hijau-organik',
+    description: 'Teh hijau organik kemasan 20 sachet, tanpa pengawet, cocok dinikmati hangat atau dingin.',
+    price: 3_900_000,
+    stock: 110,
+    sku: 'THO-022',
+    categorySlug: 'makanan-minuman',
+    imageUrls: [
+      productPhoto('photo-1544787219-7f47ccb76574'),
+      productPhoto('photo-1556679343-c7306c1976bc'),
+      productPhoto('photo-1509440159596-0249088772ff')
+    ]
+  },
+  {
+    name: 'Snack Mix Almond',
+    slug: 'snack-mix-almond',
+    description: 'Campuran snack sehat almond, kacang mete, dan kismis, kemasan 500g.',
+    price: 4_200_000,
+    stock: 95,
+    sku: 'SMA-023',
+    categorySlug: 'makanan-minuman',
+    imageUrls: [
+      productPhoto('photo-1509440159596-0249088772ff'),
+      productPhoto('photo-1495474472287-4d71bcdd2085'),
+      productPhoto('photo-1447933601403-0c6688de566e')
+    ]
+  }
+]
+
+type CategorySeed = {
+  name: string
+  slug: string
+  description: string
+  sortOrder: number
+}
+
+const categories: CategorySeed[] = [
+  {
+    name: 'Elektronik',
+    slug: 'elektronik',
+    description: 'Produk elektronik dan gadget',
+    sortOrder: 1
+  },
+  {
+    name: 'Fashion',
+    slug: 'fashion',
+    description: 'Pakaian dan aksesoris',
+    sortOrder: 2
+  },
+  {
+    name: 'Rumah Tangga',
+    slug: 'rumah-tangga',
+    description: 'Kebutuhan rumah tangga',
+    sortOrder: 3
+  },
+  {
+    name: 'Kecantikan',
+    slug: 'kecantikan',
+    description: 'Skincare, makeup, dan perawatan tubuh',
+    sortOrder: 4
+  },
+  {
+    name: 'Olahraga',
+    slug: 'olahraga',
+    description: 'Perlengkapan olahraga dan fitness',
+    sortOrder: 5
+  },
+  {
+    name: 'Makanan & Minuman',
+    slug: 'makanan-minuman',
+    description: 'Makanan, minuman, dan camilan sehat',
+    sortOrder: 6
   }
 ]
 
@@ -228,6 +557,42 @@ const reviews: ReviewSeed[] = [
     customerEmail: 'dewi@example.com',
     rating: 5,
     comment: 'Harga promo sangat worth it, recommended!'
+  },
+  {
+    productSlug: 'speaker-portabel-bluetooth',
+    customerEmail: 'budi@example.com',
+    rating: 5,
+    comment: 'Bass-nya mantap, baterai awet buat piknik.'
+  },
+  {
+    productSlug: 'speaker-portabel-bluetooth',
+    customerEmail: 'andi@example.com',
+    rating: 4,
+    comment: 'Suara jernih, ukuran pas di tas.'
+  },
+  {
+    productSlug: 'jaket-bomber-pria',
+    customerEmail: 'siti@example.com',
+    rating: 5,
+    comment: 'Jahitan rapi, bahan tidak panas dipakai siang.'
+  },
+  {
+    productSlug: 'serum-wajah-glow',
+    customerEmail: 'dewi@example.com',
+    rating: 5,
+    comment: 'Kulit terasa lebih cerah setelah 2 minggu pakai.'
+  },
+  {
+    productSlug: 'sepatu-running-pro',
+    customerEmail: 'budi@example.com',
+    rating: 4,
+    comment: 'Empuk dan ringan, cocok untuk lari pagi.'
+  },
+  {
+    productSlug: 'kopi-arabika-premium',
+    customerEmail: 'andi@example.com',
+    rating: 5,
+    comment: 'Aromanya khas, cocok untuk manual brew.'
   }
 ]
 
@@ -557,38 +922,25 @@ async function main() {
     }
   })
 
-  const categoryRecords = await Promise.all([
-    prisma.category.upsert({
-      where: { slug: 'elektronik' },
-      update: {},
-      create: {
-        name: 'Elektronik',
-        slug: 'elektronik',
-        description: 'Produk elektronik dan gadget',
-        sortOrder: 1
-      }
-    }),
-    prisma.category.upsert({
-      where: { slug: 'fashion' },
-      update: {},
-      create: {
-        name: 'Fashion',
-        slug: 'fashion',
-        description: 'Pakaian dan aksesoris',
-        sortOrder: 2
-      }
-    }),
-    prisma.category.upsert({
-      where: { slug: 'rumah-tangga' },
-      update: {},
-      create: {
-        name: 'Rumah Tangga',
-        slug: 'rumah-tangga',
-        description: 'Kebutuhan rumah tangga',
-        sortOrder: 3
-      }
-    })
-  ])
+  const categoryRecords = await Promise.all(
+    categories.map(category =>
+      prisma.category.upsert({
+        where: { slug: category.slug },
+        update: {
+          name: category.name,
+          description: category.description,
+          sortOrder: category.sortOrder,
+          isActive: true
+        },
+        create: {
+          name: category.name,
+          slug: category.slug,
+          description: category.description,
+          sortOrder: category.sortOrder
+        }
+      })
+    )
+  )
 
   const categoryMap = Object.fromEntries(
     categoryRecords.map(cat => [cat.slug, cat.id])
@@ -608,7 +960,8 @@ async function main() {
   console.log('Seed selesai.')
   console.log(`Admin: ${admin.email} / admin123`)
   console.log(`Customer demo: budi@example.com / customer123`)
-  console.log(`Produk dummy: ${products.length} (gambar via URL eksternal)`)
+  console.log(`Kategori: ${categories.length}`)
+  console.log(`Produk dummy: ${products.length} (gambar produk via Unsplash)`)
   console.log(`Pesanan delivered (seed): ${orderCount}`)
   console.log(`Penjualan tanpa ulasan: ${extraSaleCount}`)
   console.log(`Ulasan dummy: ${reviewCount}`)

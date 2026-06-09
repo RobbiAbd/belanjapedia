@@ -142,7 +142,7 @@ async function handleShare() {
 <template>
   <div
     v-if="product"
-    class="max-w-[1400px] mx-auto px-4 lg:px-6 py-8"
+    class="max-w-[1400px] mx-auto px-4 lg:px-6 py-6 sm:py-8 pb-28 lg:pb-8"
   >
     <nav class="text-sm text-neutral-600 mb-8 flex items-center gap-2 flex-wrap">
       <NuxtLink
@@ -193,7 +193,7 @@ async function handleShare() {
       </div>
 
       <div>
-        <h1 class="text-3xl lg:text-4xl font-bold text-neutral-900 mb-4">
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 mb-4">
           {{ product.name }}
         </h1>
 
@@ -211,10 +211,10 @@ async function handleShare() {
         </div>
 
         <div class="flex items-baseline gap-3 mb-4">
-          <span class="text-4xl font-bold text-neutral-900">{{ formatPrice(product.price) }}</span>
+          <span class="text-3xl sm:text-4xl font-bold text-neutral-900">{{ formatPrice(product.price) }}</span>
           <span
             v-if="product.comparePrice"
-            class="text-xl text-neutral-400 line-through"
+            class="text-lg sm:text-xl text-neutral-400 line-through"
           >
             {{ formatPrice(product.comparePrice) }}
           </span>
@@ -245,7 +245,7 @@ async function handleShare() {
           />
         </div>
 
-        <div class="flex gap-3 mb-8">
+        <div class="hidden lg:flex gap-3 mb-8">
           <UButton
             color="primary"
             size="xl"
@@ -324,5 +324,36 @@ async function handleShare() {
       :slug="product.slug"
       class="mt-4"
     />
+
+    <div class="lg:hidden fixed bottom-[4.75rem] inset-x-0 z-40 bg-white border-t border-neutral-200 px-4 py-3 safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+      <div class="flex items-center gap-3 max-w-[1400px] mx-auto">
+        <div class="min-w-0 flex-1">
+          <p class="text-xs text-neutral-500 truncate">{{ product.name }}</p>
+          <p class="text-lg font-bold text-brand-600">{{ formatPrice(product.price) }}</p>
+        </div>
+        <UButton
+          variant="outline"
+          size="lg"
+          class="rounded-full shrink-0"
+          :color="inWishlist ? 'primary' : 'neutral'"
+          icon="i-lucide-heart"
+          :class="inWishlist ? '[&_svg]:fill-current' : ''"
+          :loading="togglingWishlist"
+          aria-label="Wishlist"
+          @click="handleWishlist"
+        />
+        <UButton
+          color="primary"
+          size="lg"
+          class="rounded-full font-semibold shrink-0"
+          icon="i-lucide-shopping-cart"
+          :loading="adding"
+          :disabled="product.stock <= 0"
+          @click="handleAddToCart"
+        >
+          Keranjang
+        </UButton>
+      </div>
+    </div>
   </div>
 </template>

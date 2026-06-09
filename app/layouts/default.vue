@@ -65,25 +65,25 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
 
 <template>
   <div class="min-h-screen flex flex-col bg-neutral-50 text-dark-text">
-    <div class="bg-brand-500 text-white text-center text-sm py-1.5 px-4">
+    <div class="bg-brand-500 text-white text-center text-xs sm:text-sm py-1.5 px-3 sm:px-4 truncate">
       Gratis Ongkir + Banyak Promo — belanja di BelanjaPedia
     </div>
 
     <header class="bg-white border-b border-neutral-200 sticky top-0 z-50 shadow-sm">
       <div class="max-w-[1400px] mx-auto px-4 lg:px-6">
-        <div class="flex items-center justify-between h-16 lg:h-20 gap-4">
+        <div class="flex items-center justify-between h-14 sm:h-16 lg:h-20 gap-2 sm:gap-4">
           <NuxtLink
             to="/"
-            class="shrink-0"
+            class="shrink-0 min-w-0"
           >
             <AppLogo
               variant="horizontal"
-              :height="36"
+              :height="34"
             />
           </NuxtLink>
 
           <form
-            class="hidden md:flex flex-1 max-w-xl"
+            class="hidden md:flex flex-1 max-w-xl min-w-0"
             @submit.prevent="handleSearch"
           >
             <UInput
@@ -95,24 +95,24 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
             />
           </form>
 
-          <nav class="flex items-center gap-1 sm:gap-2">
+          <nav class="flex items-center gap-0.5 sm:gap-2 shrink-0">
             <UButton
               to="/products"
               variant="ghost"
               color="neutral"
               icon="i-lucide-layout-grid"
-              class="hidden sm:inline-flex"
+              class="hidden lg:inline-flex"
               aria-label="Kategori"
             />
             <UButton
               variant="ghost"
               color="neutral"
               icon="i-lucide-gamepad-2"
-              class="hidden sm:inline-flex"
+              class="hidden lg:inline-flex"
               aria-label="Main Game"
               @click="showGameModal = true"
             />
-            <div class="relative hidden sm:block">
+            <div class="relative hidden md:block">
               <UButton
                 to="/wishlist"
                 variant="ghost"
@@ -133,7 +133,7 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
               variant="ghost"
               color="neutral"
               icon="i-lucide-user"
-              class="hidden sm:inline-flex"
+              class="hidden md:inline-flex"
               :aria-label="user?.name ?? 'Akun'"
             />
             <UButton
@@ -142,10 +142,10 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
               variant="ghost"
               color="neutral"
               icon="i-lucide-user"
-              class="hidden sm:inline-flex"
+              class="hidden md:inline-flex"
               aria-label="Masuk"
             />
-            <div class="relative">
+            <div class="relative hidden lg:block">
               <UButton
                 to="/cart"
                 variant="ghost"
@@ -163,7 +163,7 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
             <template v-if="loggedIn">
               <NuxtLink
                 to="/account"
-                class="hidden md:inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 bg-brand-50 px-3 py-1.5 rounded-full"
+                class="hidden lg:inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 bg-brand-50 px-3 py-1.5 rounded-full"
               >
                 <UIcon
                   name="i-lucide-coins"
@@ -171,14 +171,14 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
                 />
                 {{ displayCoins.toLocaleString('id-ID') }}
               </NuxtLink>
-              <span class="hidden sm:inline text-sm font-medium text-neutral-700 max-w-28 truncate">
+              <span class="hidden lg:inline text-sm font-medium text-neutral-700 max-w-28 truncate">
                 {{ user?.name }}
               </span>
               <UButton
                 variant="outline"
                 color="neutral"
                 size="sm"
-                class="hidden sm:inline-flex rounded-full"
+                class="hidden lg:inline-flex rounded-full"
                 :loading="loggingOut"
                 @click="handleLogout"
               >
@@ -191,7 +191,7 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
                 variant="outline"
                 color="primary"
                 size="sm"
-                class="hidden sm:inline-flex rounded-full"
+                class="hidden md:inline-flex rounded-full"
               >
                 Masuk
               </UButton>
@@ -206,10 +206,23 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
             </template>
           </nav>
         </div>
+
+        <form
+          class="md:hidden pb-3"
+          @submit.prevent="handleSearch"
+        >
+          <UInput
+            v-model="searchQuery"
+            placeholder="Cari produk..."
+            icon="i-lucide-search"
+            size="md"
+            class="w-full rounded-full"
+          />
+        </form>
       </div>
     </header>
 
-    <main class="flex-1">
+    <main class="flex-1 pb-[4.75rem] lg:pb-0">
       <slot />
     </main>
 
@@ -227,5 +240,9 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
     <RewardGameModal
       v-model:open="showGameModal"
     />
+
+    <SupportFloatingSupportChat />
+
+    <LayoutMobileBottomNav />
   </div>
 </template>

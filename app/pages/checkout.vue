@@ -278,8 +278,8 @@ async function submitOrder() {
 </script>
 
 <template>
-  <div class="max-w-[1400px] mx-auto px-4 lg:px-6 py-8">
-    <h1 class="text-3xl font-bold text-neutral-900 mb-2">
+  <div class="max-w-[1400px] mx-auto px-4 lg:px-6 py-6 sm:py-8 pb-28 lg:pb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold text-neutral-900 mb-2">
       Checkout
     </h1>
     <p class="text-neutral-600 mb-8">

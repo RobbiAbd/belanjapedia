@@ -10,7 +10,7 @@ onMounted(async () => {
   <div class="max-w-[1400px] mx-auto px-4 lg:px-6 py-8">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
-        <h1 class="text-3xl font-extrabold text-neutral-900 flex items-center gap-2">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-neutral-900 flex flex-wrap items-center gap-2">
           <span>🐈</span> Feline Frenzy <span class="text-sm font-semibold px-2.5 py-0.5 bg-brand-100 text-brand-700 rounded-full">Mini-Game</span>
         </h1>
         <p class="text-neutral-600 mt-1">
@@ -30,9 +30,8 @@ onMounted(async () => {
     </div>
 
     <!-- Game Container with Premium Layout (Full Width 720p) -->
-    <div class="bg-neutral-900 rounded-3xl overflow-hidden shadow-2xl border border-neutral-800 p-4 mb-8">
-      <!-- Responsive Iframe Container -->
-      <div class="w-full h-[720px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-700">
+    <div class="bg-neutral-900 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-neutral-800 p-3 sm:p-4 mb-6 sm:mb-8">
+      <div class="w-full h-[min(60vh,420px)] sm:h-[min(70vh,600px)] lg:h-[720px] rounded-xl sm:rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-700">
         <iframe
           src="/feline-frenzy.html?v=720p"
           class="w-full h-full border-none"

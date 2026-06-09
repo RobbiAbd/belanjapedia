@@ -1,25 +1,28 @@
 <script setup lang="ts">
 const slides = [
   {
-    title: 'Belanja Seru, Hadiah Melimpah',
-    subtitle: 'Kumpulkan coin setiap belanja dan tukarkan dengan reward menarik',
-    cta: 'Mulai Belanja',
+    image: '/images/hero-banner-promo.png',
+    alt: 'Belanja Hemat, Dapetin Serunya — Diskon hingga 70% dan Gratis Ongkir',
     to: '/products',
-    bgClass: 'bg-brand-500'
+    width: 1024,
+    height: 200,
+    bg: 'bg-orange-50'
   },
   {
-    title: 'Flash Sale Spesial',
-    subtitle: 'Diskon hingga 50% untuk produk pilihan hari ini',
-    cta: 'Lihat Promo',
-    to: '/products?featured=true',
-    bgClass: 'bg-brand-600'
+    image: '/images/hero-banner-pastipedia.png',
+    alt: 'Belanja Apapun #PastiPedia — Fashion, Elektronik, Home Living, dan Kecantikan',
+    to: '/products',
+    width: 1024,
+    height: 164,
+    bg: 'bg-purple-50'
   },
   {
-    title: 'Gratis Ongkir Pertama',
-    subtitle: 'Pengiriman cepat ke seluruh Indonesia',
-    cta: 'Belanja Sekarang',
-    to: '/products',
-    bgClass: 'bg-brand-500'
+    image: '/images/hero-banner-coins.png',
+    alt: 'Kumpulkan Koin, Dapatkan Keuntungan — Setiap belanja dan aktivitas menambah koinmu',
+    to: '/account/coins',
+    width: 1024,
+    height: 146,
+    bg: 'bg-amber-50'
   }
 ]
 
@@ -51,76 +54,70 @@ onUnmounted(stopAutoplay)
 </script>
 
 <template>
-  <section
-    class="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden"
-    @mouseenter="stopAutoplay"
-    @mouseleave="startAutoplay"
-  >
+  <section class="max-w-[1400px] mx-auto px-4 lg:px-6 pt-4 sm:pt-6">
     <div
-      v-for="(slide, index) in slides"
-      :key="index"
-      class="absolute inset-0 transition-opacity duration-800"
-      :class="index === current ? 'opacity-100 z-10' : 'opacity-0 z-0'"
+      class="relative w-full overflow-hidden rounded-2xl aspect-[1024/200]"
+      @mouseenter="stopAutoplay"
+      @mouseleave="startAutoplay"
     >
       <div
-        class="absolute inset-0"
-        :class="slide.bgClass"
-      />
-
-      <div class="relative z-10 h-full max-w-[1400px] mx-auto px-4 lg:px-6 flex items-center">
-        <div class="max-w-2xl text-white">
-          <h1 class="text-4xl lg:text-5xl xl:text-7xl font-bold mb-4 leading-tight">
-            {{ slide.title }}
-          </h1>
-          <p class="text-lg lg:text-2xl text-white/90 mb-8">
-            {{ slide.subtitle }}
-          </p>
-          <UButton
-            :to="slide.to"
-            size="xl"
-            color="neutral"
-            variant="solid"
-            class="rounded-full px-8 lg:px-10 font-semibold"
-          >
-            {{ slide.cta }}
-          </UButton>
-        </div>
-      </div>
-    </div>
-
-    <button
-      type="button"
-      class="absolute left-4 top-1/2 -translate-y-1/2 z-20 size-10 rounded-full bg-dark-text/20 text-white flex items-center justify-center hover:bg-dark-text/40 transition-colors"
-      aria-label="Slide sebelumnya"
-      @click="prev"
-    >
-      <UIcon
-        name="i-lucide-chevron-left"
-        class="size-6"
-      />
-    </button>
-    <button
-      type="button"
-      class="absolute right-4 top-1/2 -translate-y-1/2 z-20 size-10 rounded-full bg-dark-text/20 text-white flex items-center justify-center hover:bg-dark-text/40 transition-colors"
-      aria-label="Slide berikutnya"
-      @click="next"
-    >
-      <UIcon
-        name="i-lucide-chevron-right"
-        class="size-6"
-      />
-    </button>
-
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-      <button
-        v-for="(_, index) in slides"
+        v-for="(slide, index) in slides"
         :key="index"
+        class="absolute inset-0 transition-opacity duration-800"
+        :class="[slide.bg, index === current ? 'opacity-100 z-10' : 'opacity-0 z-0']"
+      >
+        <NuxtLink
+          :to="slide.to"
+          class="block w-full h-full"
+          :aria-label="slide.alt"
+        >
+          <img
+            :src="slide.image"
+            :alt="slide.alt"
+            :width="slide.width"
+            :height="slide.height"
+            class="w-full h-full object-contain"
+            :loading="index === 0 ? 'eager' : 'lazy'"
+            :fetchpriority="index === 0 ? 'high' : 'auto'"
+            decoding="async"
+          >
+        </NuxtLink>
+      </div>
+
+      <button
         type="button"
-        class="h-2 rounded-full transition-all duration-300"
-        :class="index === current ? 'w-8 bg-white' : 'w-2 bg-white/50'"
-        :aria-label="`Slide ${index + 1}`"
-        @click="goTo(index)"
-      />
+        class="absolute left-3 top-1/2 -translate-y-1/2 z-20 size-8 sm:size-10 rounded-full bg-black/25 text-white flex items-center justify-center hover:bg-black/40 transition-colors"
+        aria-label="Slide sebelumnya"
+        @click="prev"
+      >
+        <UIcon
+          name="i-lucide-chevron-left"
+          class="size-5 sm:size-6"
+        />
+      </button>
+      <button
+        type="button"
+        class="absolute right-3 top-1/2 -translate-y-1/2 z-20 size-8 sm:size-10 rounded-full bg-black/25 text-white flex items-center justify-center hover:bg-black/40 transition-colors"
+        aria-label="Slide berikutnya"
+        @click="next"
+      >
+        <UIcon
+          name="i-lucide-chevron-right"
+          class="size-5 sm:size-6"
+        />
+      </button>
+
+      <div class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        <button
+          v-for="(_, index) in slides"
+          :key="index"
+          type="button"
+          class="h-2 rounded-full transition-all duration-300 shadow-sm"
+          :class="index === current ? 'w-8 bg-white' : 'w-2 bg-white/70'"
+          :aria-label="`Slide ${index + 1}`"
+          @click="goTo(index)"
+        />
+      </div>
     </div>
   </section>
 </template>

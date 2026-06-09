@@ -43,8 +43,8 @@ watch([category, search, featured], () => refresh())
 </script>
 
 <template>
-  <div class="max-w-[1400px] mx-auto px-4 lg:px-6 py-8">
-    <nav class="text-sm text-neutral-600 mb-8 flex items-center gap-2">
+  <div class="max-w-[1400px] mx-auto px-4 lg:px-6 py-6 sm:py-8">
+    <nav class="text-sm text-neutral-600 mb-4 sm:mb-8 flex items-center gap-2">
       <NuxtLink
         to="/"
         class="hover:text-brand-600 transition-colors"
@@ -55,8 +55,14 @@ watch([category, search, featured], () => refresh())
       <span class="text-neutral-900 font-medium">Produk</span>
     </nav>
 
+    <ProductCategoryChips
+      :categories="categories"
+      :active-category="category"
+      @update:category="onCategoryChange"
+    />
+
     <div class="flex flex-col lg:flex-row gap-8">
-      <div class="lg:w-64 shrink-0">
+      <div class="hidden lg:block lg:w-64 shrink-0">
         <ProductFilters
           :categories="categories"
           :active-category="category"
@@ -77,7 +83,7 @@ watch([category, search, featured], () => refresh())
               { label: 'Harga Tertinggi', value: 'price-desc' },
               { label: 'Rating Tertinggi', value: 'rating' }
             ]"
-            class="w-48"
+            class="w-full sm:w-48"
           />
         </div>
 

@@ -21,7 +21,7 @@ const footerLinks = {
 </script>
 
 <template>
-  <footer class="bg-neutral-900 text-neutral-300 py-12">
+  <footer class="bg-neutral-100 border-t border-neutral-200 text-neutral-600 py-12">
     <div class="max-w-[1400px] mx-auto px-4 lg:px-6">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
         <div class="col-span-2 md:col-span-1">
@@ -34,13 +34,13 @@ const footerLinks = {
               :height="32"
             />
           </NuxtLink>
-          <p class="text-sm text-neutral-400">
+          <p class="text-sm text-neutral-500">
             Modern e-commerce for everyone. Belanja mudah, aman, dan menyenangkan.
           </p>
         </div>
 
         <div>
-          <h4 class="font-semibold text-white mb-4">
+          <h4 class="font-semibold text-neutral-900 mb-4">
             Tentang
           </h4>
           <ul class="space-y-2 text-sm">
@@ -50,7 +50,7 @@ const footerLinks = {
             >
               <NuxtLink
                 :to="link.to"
-                class="hover:text-brand-300 transition-colors"
+                class="hover:text-brand-600 transition-colors"
               >
                 {{ link.label }}
               </NuxtLink>
@@ -59,7 +59,7 @@ const footerLinks = {
         </div>
 
         <div>
-          <h4 class="font-semibold text-white mb-4">
+          <h4 class="font-semibold text-neutral-900 mb-4">
             Bantuan
           </h4>
           <ul class="space-y-2 text-sm">
@@ -69,7 +69,7 @@ const footerLinks = {
             >
               <NuxtLink
                 :to="link.to"
-                class="hover:text-brand-300 transition-colors"
+                class="hover:text-brand-600 transition-colors"
               >
                 {{ link.label }}
               </NuxtLink>
@@ -78,7 +78,7 @@ const footerLinks = {
         </div>
 
         <div>
-          <h4 class="font-semibold text-white mb-4">
+          <h4 class="font-semibold text-neutral-900 mb-4">
             Legal
           </h4>
           <ul class="space-y-2 text-sm">
@@ -88,7 +88,7 @@ const footerLinks = {
             >
               <NuxtLink
                 :to="link.to"
-                class="hover:text-brand-300 transition-colors"
+                class="hover:text-brand-600 transition-colors"
               >
                 {{ link.label }}
               </NuxtLink>
@@ -97,12 +97,12 @@ const footerLinks = {
         </div>
       </div>
 
-      <div class="border-t border-neutral-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500">
+      <div class="border-t border-neutral-200 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-neutral-500">
         <p>&copy; {{ new Date().getFullYear() }} {{ config.public.appName }}. Semua hak dilindungi.</p>
         <div class="flex gap-4">
           <a
             href="#"
-            class="hover:text-brand-300 transition-colors"
+            class="hover:text-brand-600 transition-colors"
             aria-label="Instagram"
           >
             <UIcon
@@ -112,7 +112,7 @@ const footerLinks = {
           </a>
           <a
             href="#"
-            class="hover:text-brand-300 transition-colors"
+            class="hover:text-brand-600 transition-colors"
             aria-label="Twitter"
           >
             <UIcon
@@ -122,7 +122,7 @@ const footerLinks = {
           </a>
           <a
             href="#"
-            class="hover:text-brand-300 transition-colors"
+            class="hover:text-brand-600 transition-colors"
             aria-label="Facebook"
           >
             <UIcon

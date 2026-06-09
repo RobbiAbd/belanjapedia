@@ -48,9 +48,9 @@ function handleAddToCart() {
       </span>
     </NuxtLink>
 
-    <div class="p-4">
+    <div class="p-3 sm:p-4">
       <NuxtLink :to="`/products/${product.slug}`">
-        <h3 class="font-semibold text-neutral-900 line-clamp-2 group-hover:text-brand-600 transition-colors mb-2">
+        <h3 class="text-sm sm:text-base font-semibold text-neutral-900 line-clamp-2 group-hover:text-brand-600 transition-colors mb-2">
           {{ product.name }}
         </h3>
       </NuxtLink>
@@ -64,20 +64,23 @@ function handleAddToCart() {
         <span class="text-xs text-neutral-500">({{ product.reviewCount ?? 0 }})</span>
       </div>
 
-      <div class="flex items-baseline gap-2 mb-4">
-        <span class="text-lg font-bold text-neutral-900">{{ formatPrice(product.price) }}</span>
-        <span
+      <div class="mb-3 sm:mb-4">
+        <p class="text-base sm:text-lg font-bold text-neutral-900 leading-tight">
+          {{ formatPrice(product.price) }}
+        </p>
+        <p
           v-if="product.comparePrice"
-          class="text-sm text-neutral-400 line-through"
+          class="text-xs sm:text-sm text-neutral-400 line-through mt-0.5"
         >
           {{ formatPrice(product.comparePrice) }}
-        </span>
+        </p>
       </div>
 
       <UButton
         block
         color="primary"
-        class="rounded-full font-semibold"
+        size="sm"
+        class="rounded-full font-semibold sm:text-base"
         icon="i-lucide-shopping-cart"
         @click="handleAddToCart"
       >
