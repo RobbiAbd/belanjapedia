@@ -10,11 +10,13 @@ const { user } = useUserSession()
 const { balance, canClaimDaily, dailyReward, claimDaily, claiming, fetchStatus } = useCoins()
 const { fetch: refreshSession } = useUserSession()
 const toast = useToast()
+const showGameModal = useState('show-game-modal', () => false)
 
 const accountLinks = [
   { to: '/orders', label: 'Pesanan Saya', icon: 'i-lucide-package' },
   { to: '/account/addresses', label: 'Alamat Tersimpan', icon: 'i-lucide-map-pin' },
-  { to: '/account/coins', label: 'Riwayat Coin', icon: 'i-lucide-coins' }
+  { to: '/account/coins', label: 'Riwayat Coin', icon: 'i-lucide-coins' },
+  { to: '#', label: 'Main Game', icon: 'i-lucide-gamepad-2', isGame: true }
 ]
 
 async function handleClaimDaily() {
@@ -125,18 +127,33 @@ onMounted(() => {
       </div>
 
       <div class="flex flex-col sm:flex-row flex-wrap gap-3 mt-6">
-        <NuxtLink
+        <template
           v-for="link in accountLinks"
-          :key="link.to"
-          :to="link.to"
-          class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full border border-brand-600 text-brand-600 font-medium text-sm hover:bg-brand-50 transition-colors"
+          :key="link.label"
         >
-          {{ link.label }}
-          <UIcon
-            :name="link.icon"
-            class="size-4"
-          />
-        </NuxtLink>
+          <button
+            v-if="link.isGame"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full border border-brand-600 text-brand-600 font-medium text-sm hover:bg-brand-50 transition-colors cursor-pointer"
+            @click="showGameModal = true"
+          >
+            {{ link.label }}
+            <UIcon
+              :name="link.icon"
+              class="size-4"
+            />
+          </button>
+          <NuxtLink
+            v-else
+            :to="link.to"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full border border-brand-600 text-brand-600 font-medium text-sm hover:bg-brand-50 transition-colors"
+          >
+            {{ link.label }}
+            <UIcon
+              :name="link.icon"
+              class="size-4"
+            />
+          </NuxtLink>
+        </template>
       </div>
     </div>
   </div>

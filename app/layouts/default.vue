@@ -14,6 +14,7 @@ const toast = useToast()
 const searchQuery = ref('')
 const loggingOut = ref(false)
 const showDailyModal = ref(false)
+const showGameModal = useState('show-game-modal', () => false)
 
 function handleSearch() {
   if (!searchQuery.value.trim()) return
@@ -26,6 +27,7 @@ async function handleLogout() {
     await $fetch('/api/auth/logout', { method: 'POST' })
     await clearSession()
     showDailyModal.value = false
+    showGameModal.value = false
     await navigateTo('/')
   } finally {
     loggingOut.value = false
@@ -101,6 +103,14 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
               icon="i-lucide-layout-grid"
               class="hidden sm:inline-flex"
               aria-label="Kategori"
+            />
+            <UButton
+              variant="ghost"
+              color="neutral"
+              icon="i-lucide-gamepad-2"
+              class="hidden sm:inline-flex"
+              aria-label="Main Game"
+              @click="showGameModal = true"
             />
             <div class="relative hidden sm:block">
               <UButton
@@ -212,6 +222,10 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
       :balance="displayCoins"
       :claiming="claimingCoins"
       @claim="handleClaimDaily"
+    />
+
+    <RewardGameModal
+      v-model:open="showGameModal"
     />
   </div>
 </template>

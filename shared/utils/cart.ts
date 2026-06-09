@@ -1,7 +1,6 @@
 import type { CartItem, ProductListItem } from '#shared/types/product'
-import { DEFAULT_PRODUCT_IMAGE, resolveProductImageUrl } from '#shared/utils/productImage'
+import { resolveProductImageUrl } from '#shared/utils/productImage'
 
-export { DEFAULT_PRODUCT_IMAGE }
 
 export function calcItemCount(items: CartItem[]): number {
   return items.reduce((sum, item) => sum + item.quantity, 0)

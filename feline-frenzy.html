@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feline Frenzy: Home Survival</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: rgba(17, 24, 39, 0.85);
+      --primary: #ff8a3d;
+      --primary-glow: rgba(255, 138, 61, 0.4);
+      --secondary: #ffb86b;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 138, 61, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+    }
+
+    /* Container Utama */
+    #game-container {
+      position: relative;
+      width: 100%;
+      max-width: 1280px;
+      height: 100%;
+      max-height: 720px;
+      aspect-ratio: 16 / 9;
+      background-color: #111827;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 138, 61, 0.15);
+      border: 1px solid var(--glass-border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Canvas Area */
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: #0f172a;
+    }
+
+    /* UI Overlay Screens */
+    .screen-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      transition: opacity 0.3s ease;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Premium UI Card */
+    .menu-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+      animation: floatIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes floatIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+      letter-spacing: -0.025em;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .tagline {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Stats Panel */
+    .game-over-stats {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .stat-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    /* Instructions & Controls */
+    .instructions {
+      text-align: left;
+      margin-bottom: 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1rem 1.25rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .instruction-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .instruction-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .key-badge {
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-bottom: 3px solid #374151;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-weight: bold;
+      color: var(--secondary);
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), #e06d20);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px var(--primary-glow);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 138, 61, 0.5);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    /* Speaker toggle */
+    #sound-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.2s;
+    }
+
+    #sound-toggle:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <!-- Sound Toggle -->
+    <button id="sound-toggle" title="Matikan/Aktifkan Suara">🔊</button>
+
+    <!-- Start Screen Overlay -->
+    <div id="start-screen" class="screen-overlay">
+      <div class="menu-card">
+        <h1>🐈 <span>Feline Frenzy</span></h1>
+        <div class="tagline">Home Survival</div>
+
+        <div class="instructions">
+          <div class="instruction-item">
+            <span class="key-badge">WASD</span> atau <span class="key-badge">Arah</span> &nbsp;Gerakkan Kucing
+          </div>
+          <div class="instruction-item">
+            🎯 &nbsp;Kucing otomatis menyerang tikus terdekat
+          </div>
+          <div class="instruction-item">
+            🟢 &nbsp;Ambil Catnip untuk naik level & perkuat senjata
+          </div>
+        </div>
+
+        <button id="btn-start" class="btn">Mulai Bermain 🎮</button>
+      </div>
+    </div>
+
+    <!-- Game Over Screen Overlay -->
+    <div id="gameover-screen" class="screen-overlay hidden">
+      <div class="menu-card">
+        <h1>💀 <span>Game Over!</span></h1>
+        <div class="tagline">Kucing Anda kehabisan nyawa</div>
+
+        <div class="game-over-stats">
+          <div class="stat-box">
+            <span class="stat-label">Waktu</span>
+            <span id="stat-time" class="stat-value">00:00</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Level</span>
+            <span id="stat-level" class="stat-value">1</span>
+          </div>
+        </div>
+
+        <button id="btn-restart" class="btn">Coba Lagi 🔄</button>
+      </div>
+    </div>
+
+    <!-- The Canvas -->
+    <canvas id="gameCanvas"></canvas>
+  </div>
+
+  <script>
+    const BP_CAT_IMAGE = new Image();
+    BP_CAT_IMAGE.src = '/images/belanjapedia_icon.png';
+
+    // --- SOUND ENGINE (Web Audio API) ---
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }
+
+      playShoot() {
+        if (this.muted || !this.ctx) return;
+        this.init();
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.1);
+
+        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.1);
+      }
+
+      playHit() {
+        if (this.muted || !this.ctx) return;
+        this.init();
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(80, this.ctx.currentTime + 0.05);
+
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.1);
+      }
+
+      playLevelUp() {
+        if (this.muted || !this.ctx) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        let notes = [261.63, 329.63, 392.00, 523.25]; // C, E, G, C
+        notes.forEach((freq, index) => {
+          let osc = this.ctx.createOscillator();
+          let gain = this.ctx.createGain();
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.frequency.setValueAtTime(freq, now + index * 0.08);
+          gain.gain.setValueAtTime(0.1, now + index * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.08 + 0.15);
+
+          osc.start(now + index * 0.08);
+          osc.stop(now + index * 0.08 + 0.15);
+        });
+      }
+
+      playPlayerHurt() {
+        if (this.muted || !this.ctx) return;
+        this.init();
+        let osc = this.ctx.createOscillator();
+        let gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(50, this.ctx.currentTime + 0.25);
+
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.25);
+      }
+
+      playGameOver() {
+        if (this.muted || !this.ctx) return;
+        this.init();
+        const now = this.ctx.currentTime;
+        let notes = [293.66, 277.18, 261.63, 220.00]; // D, C#, C, A (minor/sad progression)
+        notes.forEach((freq, index) => {
+          let osc = this.ctx.createOscillator();
+          let gain = this.ctx.createGain();
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(freq, now + index * 0.15);
+          gain.gain.setValueAtTime(0.15, now + index * 0.15);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + index * 0.15 + 0.35);
+
+          osc.start(now + index * 0.15);
+          osc.stop(now + index * 0.15 + 0.35);
+        });
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // Toggle sound button
+    const soundToggle = document.getElementById('sound-toggle');
+    soundToggle.addEventListener('click', () => {
+      sound.muted = !sound.muted;
+      soundToggle.textContent = sound.muted ? '🔇' : '🔊';
+    });
+
+
+    // --- GAME ENGINE ---
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Set logical aspect ratio 1280x720 (720p)
+    const LOGICAL_WIDTH = 1280;
+    const LOGICAL_HEIGHT = 720;
+    canvas.width = LOGICAL_WIDTH;
+    canvas.height = LOGICAL_HEIGHT;
+
+    // Controls state
+    const keys = {};
+    window.addEventListener('keydown', (e) => {
+      keys[e.code] = true;
+      // Prevent browser scrolling on space/arrow keys
+      if(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.code) > -1) {
+        e.preventDefault();
+      }
+    });
+    window.addEventListener('keyup', (e) => {
+      keys[e.code] = false;
+    });
+
+    // --- ENTITY CLASSES ---
+
+    // 1. PLAYER
+    class Player {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = 32;
+        this.speed = 5;
+        this.health = 9;
+        this.maxHealth = 9;
+        this.level = 1;
+        this.xp = 0;
+        this.xpNeeded = 10;
+        this.invulnerableTime = 0;
+        this.shootTimer = 0;
+        this.shootInterval = 1000; // in milliseconds
+        this.auraRadius = 100;
+        this.auraPulse = 0;
+      }
+
+      update(deltaTime) {
+        // Invulnerability frame reduction
+        if (this.invulnerableTime > 0) {
+          this.invulnerableTime -= deltaTime;
+        }
+
+        // Movement handling
+        let dx = 0;
+        let dy = 0;
+
+        if (keys['KeyW'] || keys['ArrowUp']) dy -= 1;
+        if (keys['KeyS'] || keys['ArrowDown']) dy += 1;
+        if (keys['KeyA'] || keys['ArrowLeft']) dx -= 1;
+        if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
+
+        // Normalise vector for diagonal speed consistency
+        if (dx !== 0 && dy !== 0) {
+          dx *= 0.7071;
+          dy *= 0.7071;
+        }
+
+        this.x += dx * this.speed;
+        this.y += dy * this.speed;
+
+        // Bounds constraints
+        this.x = Math.max(this.size, Math.min(LOGICAL_WIDTH - this.size, this.x));
+        this.y = Math.max(this.size, Math.min(LOGICAL_HEIGHT - this.size, this.y));
+
+        // Auto-shoot timer
+        this.shootTimer += deltaTime;
+        if (this.shootTimer >= this.shootInterval) {
+          this.shootTimer = 0;
+          this.autoShoot();
+        }
+
+        // Pulse effect for Aura
+        this.auraPulse += deltaTime * 0.003;
+      }
+
+      draw(ctx) {
+        // Red flashing effect when invulnerable/hit
+        let isFlashing = this.invulnerableTime > 0 && Math.floor(Date.now() / 80) % 2 === 0;
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Draw Salted Fish Aura (Area Weapon)
+        let auraScale = 1 + Math.sin(this.auraPulse) * 0.05;
+        let currentAuraRadius = this.auraRadius * auraScale;
+
+        // Aura Outer Glow
+        let grad = ctx.createRadialGradient(0, 0, 10, 0, 0, currentAuraRadius);
+        grad.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+        grad.addColorStop(0.7, 'rgba(16, 185, 129, 0.05)');
+        grad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, currentAuraRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Aura boundary stroke
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Draw Player body
+        if (isFlashing) {
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath();
+          ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Shadow
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+          ctx.beginPath();
+          ctx.ellipse(0, this.size / 2 - 2, this.size / 2, this.size / 4, 0, 0, Math.PI*2);
+          ctx.fill();
+
+          try {
+            // Draw BelanjaPedia Kucing sprite
+            ctx.drawImage(BP_CAT_IMAGE, -this.size / 2, -this.size / 2, this.size, this.size);
+          } catch (e) {
+            // Main body fallback
+            ctx.fillStyle = '#ff8a3d';
+            ctx.beginPath();
+            ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        ctx.restore();
+      }
+
+      autoShoot() {
+        // Find nearest enemy
+        if (enemies.length === 0) return;
+
+        let nearestEnemy = null;
+        let minDist = Infinity;
+
+        for (let enemy of enemies) {
+          let dist = Math.hypot(enemy.x - this.x, enemy.y - this.y);
+          if (dist < minDist) {
+            minDist = dist;
+            nearestEnemy = enemy;
+          }
+        }
+
+        if (nearestEnemy) {
+          // Spawn Yarn Ball projectile directed towards nearest enemy
+          let angle = Math.atan2(nearestEnemy.y - this.y, nearestEnemy.x - this.x);
+          projectiles.push(new Projectile(this.x, this.y, angle));
+          sound.playShoot();
+        }
+      }
+
+      addXp(amount) {
+         this.xp += amount;
+         if (this.xp >= this.xpNeeded) {
+           this.xp -= this.xpNeeded;
+           this.level++;
+           this.xpNeeded = Math.floor(this.xpNeeded * 1.3) + 5;
+           // Scale weapon speed (yarn ball shoot interval reduction)
+           this.shootInterval = Math.max(300, 1000 - (this.level - 1) * 60);
+           sound.playLevelUp();
+           
+           // Spawn Level Up text
+           floatingTexts.push(new FloatingText("LEVEL UP! ⚡", this.x, this.y - 30, '#ffb86b', 24));
+
+           if (window.parent) {
+             window.parent.postMessage({ type: 'GAME_LEVEL_UP', level: this.level }, '*');
+           }
+         }
+       }
+
+      takeDamage() {
+        if (this.invulnerableTime > 0) return;
+        this.health--;
+        this.invulnerableTime = 1000; // 1 second invulnerable
+        sound.playPlayerHurt();
+        floatingTexts.push(new FloatingText("-1 ❤️", this.x, this.y - 25, '#ef4444', 18));
+      }
+    }
+
+    // 2. PROJECTILE (Yarn Ball)
+    class Projectile {
+      constructor(x, y, angle) {
+        this.x = x;
+        this.y = y;
+        this.radius = 8;
+        this.speed = 8;
+        this.dx = Math.cos(angle) * this.speed;
+        this.dy = Math.sin(angle) * this.speed;
+        this.color = '#f43f5e'; // Vibrant pink/magenta
+        this.damage = 1;
+      }
+
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+      }
+
+      draw(ctx) {
+        ctx.save();
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw yarn stripes
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius * 0.6, 0.2, Math.PI - 0.2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      isOffScreen() {
+        return (
+          this.x < -this.radius ||
+          this.x > LOGICAL_WIDTH + this.radius ||
+          this.y < -this.radius ||
+          this.y > LOGICAL_HEIGHT + this.radius
+        );
+      }
+    }
+
+    // 3. ENEMY (Sewer Rat)
+    class Enemy {
+      constructor(x, y, speedMult = 1) {
+        this.x = x;
+        this.y = y;
+        this.size = 24;
+        this.speed = (1.2 + Math.random() * 0.8) * speedMult;
+        this.color = '#6b7280'; // Gray
+        this.health = 1;
+      }
+
+      update(playerX, playerY) {
+        let angle = Math.atan2(playerY - this.y, playerX - this.x);
+        this.x += Math.cos(angle) * this.speed;
+        this.y += Math.sin(angle) * this.speed;
+      }
+
+      draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Body Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.beginPath();
+        ctx.ellipse(0, this.size/2 - 1, this.size/2, this.size/4, 0, 0, Math.PI*2);
+        ctx.fill();
+
+        // Rat Body
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Ears
+        ctx.fillStyle = '#f472b6'; // Pink inner ear
+        ctx.beginPath();
+        ctx.arc(-this.size/3, -this.size/3, this.size/5, 0, Math.PI*2);
+        ctx.arc(this.size/3, -this.size/3, this.size/5, 0, Math.PI*2);
+        ctx.fill();
+
+        // Nose
+        ctx.fillStyle = '#f472b6';
+        ctx.beginPath();
+        ctx.arc(0, this.size/3 + 2, 2.5, 0, Math.PI*2);
+        ctx.fill();
+
+        // Beady Eyes
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(-4, -1, 1.5, 0, Math.PI*2);
+        ctx.arc(4, -1, 1.5, 0, Math.PI*2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    // 4. CATNIP (XP Pickup)
+    class Catnip {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 6;
+        this.color = '#10b981'; // Green
+        this.pulse = Math.random() * Math.PI;
+      }
+
+      update(playerX, playerY, deltaTime) {
+        this.pulse += deltaTime * 0.005;
+
+        // Magnet attraction effect when player is close
+        let dist = Math.hypot(playerX - this.x, playerY - this.y);
+        if (dist < 120) {
+          let speed = 6 * (1 - dist / 120) + 1;
+          let angle = Math.atan2(playerY - this.y, playerX - this.x);
+          this.x += Math.cos(angle) * speed;
+          this.y += Math.sin(angle) * speed;
+        }
+      }
+
+      draw(ctx) {
+        ctx.save();
+        let scale = 1 + Math.sin(this.pulse) * 0.2;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = this.color;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius * scale, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // 5. PARTICLE (For hit explosions)
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = 2 + Math.random() * 3;
+        this.color = color;
+        let angle = Math.random() * Math.PI * 2;
+        let speed = 1 + Math.random() * 4;
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
+        this.life = 1.0;
+        this.decay = 0.02 + Math.random() * 0.03;
+      }
+
+      update() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.life -= this.decay;
+      }
+
+      draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // 6. FLOATING TEXT
+    class FloatingText {
+      constructor(text, x, y, color = '#fff', fontSize = 16) {
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.fontSize = fontSize;
+        this.life = 1.0;
+        this.speedY = -0.8;
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.life -= 0.02;
+      }
+
+      draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = this.color;
+        ctx.font = `bold ${this.fontSize}px 'Outfit', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(this.text, this.x, this.y);
+        ctx.restore();
+      }
+    }
+
+
+    // --- GAME ENGINE STATE & LOOP ---
+
+    let player;
+    let enemies = [];
+    let projectiles = [];
+    let catnips = [];
+    let particles = [];
+    let floatingTexts = [];
+
+    let isPlaying = false;
+    let timeElapsed = 0; // seconds
+    let enemySpawnTimer = 0;
+    let enemySpawnInterval = 1500; // in milliseconds
+    let auraDamageTimer = 0;
+    let auraDamageInterval = 300; // Deal area damage every 300ms
+
+    let killCount = 0;
+    let lastTime = 0;
+
+    function resetGame() {
+      player = new Player(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
+      enemies = [];
+      projectiles = [];
+      catnips = [];
+      particles = [];
+      floatingTexts = [];
+      timeElapsed = 0;
+      enemySpawnTimer = 0;
+      enemySpawnInterval = 1500;
+      auraDamageTimer = 0;
+      killCount = 0;
+      lastTime = performance.now();
+
+      if (window.parent) {
+        window.parent.postMessage({ type: 'GAME_START' }, '*');
+      }
+    }
+
+    function spawnEnemy() {
+      // Spawn at random border outside the canvas
+      let side = Math.floor(Math.random() * 4);
+      let x, y;
+      let offset = 40;
+
+      if (side === 0) { // Top
+        x = Math.random() * LOGICAL_WIDTH;
+        y = -offset;
+      } else if (side === 1) { // Right
+        x = LOGICAL_WIDTH + offset;
+        y = Math.random() * LOGICAL_HEIGHT;
+      } else if (side === 2) { // Bottom
+        x = Math.random() * LOGICAL_WIDTH;
+        y = LOGICAL_HEIGHT + offset;
+      } else { // Left
+        x = -offset;
+        y = Math.random() * LOGICAL_HEIGHT;
+      }
+
+      // Harder enemies as time passes (slight speed boost)
+      let speedMult = 1 + (timeElapsed / 120); 
+      enemies.push(new Enemy(x, y, speedMult));
+    }
+
+    function checkCollisions(deltaTime) {
+      // 1. Yarn Ball vs Enemy
+      for (let pIndex = projectiles.length - 1; pIndex >= 0; pIndex--) {
+        let p = projectiles[pIndex];
+        for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
+          let e = enemies[eIndex];
+          let dist = Math.hypot(p.x - e.x, p.y - e.y);
+
+          if (dist < p.radius + e.size / 2) {
+            // Collision!
+            e.health -= p.damage;
+            projectiles.splice(pIndex, 1);
+            sound.playHit();
+
+            // Spawn floating damage & hit particles
+            floatingTexts.push(new FloatingText("1", e.x, e.y - 15, '#ffb86b', 14));
+            for(let i=0; i<6; i++) {
+              particles.push(new Particle(e.x, e.y, '#f43f5e'));
+            }
+
+            if (e.health <= 0) {
+              // Spawn Catnip XP point
+              catnips.push(new Catnip(e.x, e.y));
+              enemies.splice(eIndex, 1);
+              killCount++;
+              if (window.parent) {
+                window.parent.postMessage({ type: 'GAME_KILL', kills: killCount }, '*');
+              }
+            }
+            break;
+          }
+        }
+      }
+
+      // 2. Aura damage vs Enemy
+      auraDamageTimer += deltaTime;
+      let dealAuraDamage = false;
+      if (auraDamageTimer >= auraDamageInterval) {
+        auraDamageTimer = 0;
+        dealAuraDamage = true;
+      }
+
+      for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
+        let e = enemies[eIndex];
+        let dist = Math.hypot(player.x - e.x, player.y - e.y);
+
+        // Check if enemy inside Aura radius
+        if (dist < player.auraRadius + e.size / 2) {
+          if (dealAuraDamage) {
+            e.health -= 1; // Aura damage
+            floatingTexts.push(new FloatingText("AURA", e.x, e.y - 15, '#10b981', 12));
+            for(let i=0; i<3; i++) {
+              particles.push(new Particle(e.x, e.y, '#10b981'));
+            }
+            if (e.health <= 0) {
+              catnips.push(new Catnip(e.x, e.y));
+              enemies.splice(eIndex, 1);
+              killCount++;
+              if (window.parent) {
+                window.parent.postMessage({ type: 'GAME_KILL', kills: killCount }, '*');
+              }
+              continue;
+            }
+          }
+        }
+
+        // 3. Enemy vs Player
+        if (dist < player.size / 2 + e.size / 2) {
+          player.takeDamage();
+        }
+      }
+
+      // 4. Catnip vs Player
+      for (let cIndex = catnips.length - 1; cIndex >= 0; cIndex--) {
+        let c = catnips[cIndex];
+        let dist = Math.hypot(player.x - c.x, player.y - c.y);
+        if (dist < player.size / 2 + c.radius) {
+          // Collect
+          player.addXp(1);
+          catnips.splice(cIndex, 1);
+        }
+      }
+    }
+
+    // Draw HUD/Non-Diegetic UI
+    function drawHUD() {
+      // 1. Draw XP Bar at top edge
+      let xpPct = player.xp / player.xpNeeded;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.fillRect(0, 0, LOGICAL_WIDTH, 12);
+      ctx.fillStyle = '#10b981'; // Green XP
+      ctx.fillRect(0, 0, LOGICAL_WIDTH * xpPct, 12);
+
+      // Bar border line
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, 12);
+      ctx.lineTo(LOGICAL_WIDTH, 12);
+      ctx.stroke();
+
+      // 2. HUD text (Lives & Time & Level)
+      ctx.save();
+      // Draw background bar for HUD text
+      ctx.fillStyle = 'rgba(11, 15, 25, 0.6)';
+      ctx.fillRect(0, 12, LOGICAL_WIDTH, 50);
+
+      // Lives Heart icon
+      ctx.fillStyle = '#ef4444';
+      ctx.font = "24px 'Outfit', sans-serif";
+      ctx.textAlign = 'left';
+      ctx.fillText("❤️ " + player.health, 30, 46);
+
+      // Level Indicator
+      ctx.fillStyle = '#ffb86b';
+      ctx.font = "bold 20px 'Outfit', sans-serif";
+      ctx.textAlign = 'center';
+      ctx.fillText(`LV. ${player.level}`, LOGICAL_WIDTH / 2 - 100, 45);
+
+      // Timer (formatted mm:ss)
+      let mins = Math.floor(timeElapsed / 60);
+      let secs = Math.floor(timeElapsed % 60);
+      let timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      ctx.fillStyle = '#f3f4f6';
+      ctx.font = "bold 22px 'Outfit', sans-serif";
+      ctx.fillText(`⏱️ ${timeStr}`, LOGICAL_WIDTH / 2 + 100, 45);
+
+      ctx.restore();
+    }
+
+    // MAIN GAME LOOP
+    function gameLoop(timestamp) {
+      if (!isPlaying) return;
+
+      let deltaTime = timestamp - lastTime;
+      // Cap deltaTime to avoid massive jumps during lag spikes
+      if (deltaTime > 100) deltaTime = 16.67; 
+      lastTime = timestamp;
+
+      // Update game stats
+      timeElapsed += deltaTime / 1000;
+
+      // Enemy spawn timer scaling: get faster as time passes
+      enemySpawnInterval = Math.max(500, 1500 - (timeElapsed * 5));
+      enemySpawnTimer += deltaTime;
+      if (enemySpawnTimer >= enemySpawnInterval) {
+        enemySpawnTimer = 0;
+        spawnEnemy();
+      }
+
+      // 1. UPDATE PHASE
+      player.update(deltaTime);
+
+      // Update projectiles
+      for (let i = projectiles.length - 1; i >= 0; i--) {
+        projectiles[i].update();
+        if (projectiles[i].isOffScreen()) {
+          projectiles.splice(i, 1);
+        }
+      }
+
+      // Update enemies
+      for (let enemy of enemies) {
+        enemy.update(player.x, player.y);
+      }
+
+      // Update Catnip
+      for (let catnip of catnips) {
+        catnip.update(player.x, player.y, deltaTime);
+      }
+
+      // Update particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        if (particles[i].life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+
+      // Update floating texts
+      for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        floatingTexts[i].update();
+        if (floatingTexts[i].life <= 0) {
+          floatingTexts.splice(i, 1);
+        }
+      }
+
+      // Collision handling
+      checkCollisions(deltaTime);
+
+      // Check Game Over
+      if (player.health <= 0) {
+        gameOver();
+        return;
+      }
+
+      // 2. RENDER PHASE
+      ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+
+      // Draw floor grid pattern for gaming aesthetic
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      const gridSize = 50;
+      for (let x = 0; x < LOGICAL_WIDTH; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, LOGICAL_HEIGHT);
+        ctx.stroke();
+      }
+      for (let y = 0; y < LOGICAL_HEIGHT; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(LOGICAL_WIDTH, y);
+        ctx.stroke();
+      }
+
+      // Draw entities
+      for (let catnip of catnips) catnip.draw(ctx);
+      for (let enemy of enemies) enemy.draw(ctx);
+      for (let p of projectiles) p.draw(ctx);
+      for (let particle of particles) particle.draw(ctx);
+      
+      player.draw(ctx);
+
+      for (let text of floatingTexts) text.draw(ctx);
+
+      // Draw HUD overlays
+      drawHUD();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function gameOver() {
+       isPlaying = false;
+       sound.playGameOver();
+
+       let score = (killCount * 10) + (player.level * 50) + Math.floor(timeElapsed);
+
+       // Update overlay UI
+       let mins = Math.floor(timeElapsed / 60);
+       let secs = Math.floor(timeElapsed % 60);
+       let timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+       
+       document.getElementById('stat-time').textContent = timeStr;
+       document.getElementById('stat-level').textContent = player.level;
+       
+       document.getElementById('gameover-screen').classList.remove('hidden');
+
+       if (window.parent) {
+         window.parent.postMessage({
+           type: 'GAME_OVER',
+           score: score,
+           level: player.level,
+           time: timeStr,
+           kills: killCount
+         }, '*');
+       }
+     }
+
+    // --- INTERFACE INTERACTIVE HANDLERS ---
+
+    const startScreen = document.getElementById('start-screen');
+    const gameoverScreen = document.getElementById('gameover-screen');
+    const btnStart = document.getElementById('btn-start');
+    const btnRestart = document.getElementById('btn-restart');
+
+    btnStart.addEventListener('click', () => {
+      sound.init(); // Init Audio Context
+      startScreen.classList.add('hidden');
+      resetGame();
+      isPlaying = true;
+      requestAnimationFrame(gameLoop);
+    });
+
+    btnRestart.addEventListener('click', () => {
+      gameoverScreen.classList.add('hidden');
+      resetGame();
+      isPlaying = true;
+      requestAnimationFrame(gameLoop);
+    });
+
+  </script>
+</body>
+</html>
