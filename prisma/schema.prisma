@@ -53,6 +53,7 @@ model User {
   reviews          Review[]
   wishlistItems    WishlistItem[]
   coinTransactions CoinTransaction[]
+  gameScores       GameScore[]
 
   @@index([deletedAt])
   @@map("users")
@@ -269,4 +270,21 @@ model CoinTransaction {
 
   @@index([userId, createdAt])
   @@map("coin_transactions")
+}
+
+model GameScore {
+  id         Int      @id @default(autoincrement())
+  userId     Int?     @map("user_id")
+  name       String   @default("Guest Player")
+  score      Int
+  level      Int
+  time       String
+  timeInSecs Int      @map("time_in_secs")
+  kills      Int
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("game_scores")
 }

@@ -11,12 +11,12 @@ export function calcPlayerSpeed(level: number): number {
 
 export function calcEnemySpeed(playerSpeed: number): number {
   if (playerSpeed < 0) return 0
-  return playerSpeed * 0.75
+  return playerSpeed * 0.5
 }
 
 export function calcEnemySpawnCount(timeElapsed: number): number {
   if (timeElapsed < 0) return 1
-  return 1 + Math.floor(timeElapsed / 5)
+  return 1 + Math.floor(timeElapsed / 7)
 }
 
 export function calcProjectileCount(level: number): number {

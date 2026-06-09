@@ -84,6 +84,7 @@ async function submitGameScore(score: number, level: number, time: string, kills
       data: {
         earnedCoins: number
         newBalance: number
+        leaderboard: any[]
       }
     }>('/api/game/submit', {
       method: 'POST',
@@ -104,6 +105,18 @@ async function submitGameScore(score: number, level: number, time: string, kills
       
       // Refresh leaderboard
       await fetchLeaderboard()
+
+      // Post message to iframe with updated leaderboard
+      const iframe = document.querySelector('iframe')
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({
+          type: 'UPDATE_LEADERBOARD',
+          leaderboard: response.data.leaderboard,
+          currentScore: score,
+          currentLevel: level,
+          currentKills: kills
+        }, '*')
+      }
     }
   } catch (error) {
     console.error(error)
@@ -237,18 +250,62 @@ onUnmounted(() => {
 
         <!-- Tab Body: Game -->
         <div v-show="activeTab === 'game'" class="flex flex-col gap-4">
-          <div class="w-full h-[min(52vh,420px)] sm:h-[540px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-800 shadow-inner relative">
-            <iframe
-              v-if="open"
-              src="/feline-frenzy.html?v=modal"
-              class="absolute inset-0 w-full h-full border-none"
-              allow="autoplay"
-            />
+          <div
+            v-if="!loggedIn"
+            class="w-full h-[min(52vh,420px)] sm:h-[540px] rounded-2xl bg-[#0f172a] border border-neutral-800 flex flex-col items-center justify-center p-6 sm:p-8 text-center relative overflow-hidden"
+          >
+            <div class="absolute -top-40 -left-40 size-80 bg-brand-500/10 blur-[120px] rounded-full" />
+            <div class="absolute -bottom-40 -right-40 size-80 bg-emerald-500/10 blur-[120px] rounded-full" />
+
+            <div class="z-10 max-w-md space-y-6">
+              <div class="inline-flex size-20 items-center justify-center bg-brand-500/10 border border-brand-500/20 rounded-3xl text-4xl animate-bounce">
+                🔒
+              </div>
+              <div class="space-y-2">
+                <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight">
+                  Login Diperlukan!
+                </h3>
+                <p class="text-sm text-neutral-400 leading-relaxed">
+                  Anda harus masuk ke akun BelanjaPedia Anda terlebih dahulu untuk dapat memainkan game Feline Frenzy, mendapatkan Koin Belanja, dan bersaing di Papan Peringkat.
+                </p>
+              </div>
+              <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+                <UButton
+                  to="/login"
+                  color="primary"
+                  size="lg"
+                  class="rounded-full font-bold px-6"
+                  @click="open = false"
+                >
+                  Masuk Sekarang 🔑
+                </UButton>
+                <UButton
+                  variant="ghost"
+                  color="neutral"
+                  size="lg"
+                  class="rounded-full font-semibold text-neutral-400 hover:text-white"
+                  @click="open = false"
+                >
+                  Kembali
+                </UButton>
+              </div>
+            </div>
           </div>
-          <p class="text-[11px] text-neutral-500 text-center -mt-1 flex items-center justify-center gap-1">
-            <UIcon name="i-lucide-info" class="size-3.5" />
-            <span>Klik di dalam game terlebih dahulu agar keyboard mendeteksi gerakan kucing.</span>
-          </p>
+
+          <template v-else>
+            <div class="w-full h-[min(52vh,420px)] sm:h-[540px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-800 shadow-inner relative">
+              <iframe
+                v-if="open"
+                src="/feline-frenzy.html?v=modal"
+                class="absolute inset-0 w-full h-full border-none"
+                allow="autoplay"
+              />
+            </div>
+            <p class="text-[11px] text-neutral-500 text-center -mt-1 flex items-center justify-center gap-1">
+              <UIcon name="i-lucide-info" class="size-3.5" />
+              <span>Klik di dalam game terlebih dahulu agar keyboard mendeteksi gerakan kucing.</span>
+            </p>
+          </template>
         </div>
 
         <!-- Tab Body: Leaderboard -->
@@ -267,10 +324,11 @@ onUnmounted(() => {
                 <tr class="bg-neutral-50 text-neutral-700 font-semibold border-b border-neutral-200">
                   <th class="py-3.5 px-4 text-center w-16">Rank</th>
                   <th class="py-3.5 px-4">Nama Pemain</th>
-                  <th class="py-3.5 px-4 text-center">Skor Akhir</th>
+                  <th class="py-3.5 px-4 text-center">Total Koin</th>
+                  <th class="py-3.5 px-4 text-center">Lencana Dibuka</th>
                   <th class="py-3.5 px-4 text-center">Level Max</th>
-                  <th class="py-3.5 px-4 text-center">Kills</th>
-                  <th class="py-3.5 px-4 text-center">Durasi</th>
+                  <th class="py-3.5 px-4 text-center">Kills Maks</th>
+                  <th class="py-3.5 px-4 text-center">Durasi Maks</th>
                 </tr>
               </thead>
               <tbody>
@@ -300,7 +358,10 @@ onUnmounted(() => {
                     <span v-if="entry.userId === user?.id && entry.userId" class="text-[10px] font-medium bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded ml-1">Saya</span>
                   </td>
                   <td class="py-3 px-4 text-center font-extrabold text-brand-600">
-                    {{ entry.score.toLocaleString('id-ID') }}
+                    🪙 {{ (entry.coins ?? 0).toLocaleString('id-ID') }}
+                  </td>
+                  <td class="py-3 px-4 text-center font-semibold text-amber-600">
+                    🏆 {{ entry.achievementsCount ?? 0 }} / 5
                   </td>
                   <td class="py-3 px-4 text-center font-semibold">LV. {{ entry.level }}</td>
                   <td class="py-3 px-4 text-center text-neutral-600">{{ entry.kills }} tikus</td>
