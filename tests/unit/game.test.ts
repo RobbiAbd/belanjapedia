@@ -44,9 +44,9 @@ describe('game calculations', () => {
   })
 
   describe('calcEnemySpeed', () => {
-    it('should return 3/4 of player speed', () => {
-      expect(calcEnemySpeed(2)).toBe(1.5)
-      expect(calcEnemySpeed(4)).toBe(3.0)
+    it('should return 1/2 of player speed', () => {
+      expect(calcEnemySpeed(2)).toBe(1.0)
+      expect(calcEnemySpeed(4)).toBe(2.0)
     })
 
     it('should return 0 for negative speed', () => {
@@ -63,12 +63,12 @@ describe('game calculations', () => {
       expect(calcEnemySpawnCount(-5)).toBe(1)
     })
 
-    it('should increase count by 1 every 5 seconds', () => {
-      expect(calcEnemySpawnCount(4.9)).toBe(1)
-      expect(calcEnemySpawnCount(5.0)).toBe(2)
-      expect(calcEnemySpawnCount(9.9)).toBe(2)
-      expect(calcEnemySpawnCount(10.0)).toBe(3)
-      expect(calcEnemySpawnCount(25.0)).toBe(6)
+    it('should increase count by 1 every 7 seconds', () => {
+      expect(calcEnemySpawnCount(6.9)).toBe(1)
+      expect(calcEnemySpawnCount(7.0)).toBe(2)
+      expect(calcEnemySpawnCount(13.9)).toBe(2)
+      expect(calcEnemySpawnCount(14.0)).toBe(3)
+      expect(calcEnemySpawnCount(35.0)).toBe(6)
     })
   })
 

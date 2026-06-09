@@ -84,6 +84,7 @@ async function submitGameScore(score: number, level: number, time: string, kills
       data: {
         earnedCoins: number
         newBalance: number
+        leaderboard: any[]
       }
     }>('/api/game/submit', {
       method: 'POST',
@@ -104,6 +105,18 @@ async function submitGameScore(score: number, level: number, time: string, kills
       
       // Refresh leaderboard
       await fetchLeaderboard()
+
+      // Post message to iframe with updated leaderboard
+      const iframe = document.querySelector('iframe')
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({
+          type: 'UPDATE_LEADERBOARD',
+          leaderboard: response.data.leaderboard,
+          currentScore: score,
+          currentLevel: level,
+          currentKills: kills
+        }, '*')
+      }
     }
   } catch (error) {
     console.error(error)
@@ -267,10 +280,11 @@ onUnmounted(() => {
                 <tr class="bg-neutral-50 text-neutral-700 font-semibold border-b border-neutral-200">
                   <th class="py-3.5 px-4 text-center w-16">Rank</th>
                   <th class="py-3.5 px-4">Nama Pemain</th>
-                  <th class="py-3.5 px-4 text-center">Skor Akhir</th>
+                  <th class="py-3.5 px-4 text-center">Total Koin</th>
+                  <th class="py-3.5 px-4 text-center">Lencana Dibuka</th>
                   <th class="py-3.5 px-4 text-center">Level Max</th>
-                  <th class="py-3.5 px-4 text-center">Kills</th>
-                  <th class="py-3.5 px-4 text-center">Durasi</th>
+                  <th class="py-3.5 px-4 text-center">Kills Maks</th>
+                  <th class="py-3.5 px-4 text-center">Durasi Maks</th>
                 </tr>
               </thead>
               <tbody>
@@ -300,7 +314,10 @@ onUnmounted(() => {
                     <span v-if="entry.userId === user?.id && entry.userId" class="text-[10px] font-medium bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded ml-1">Saya</span>
                   </td>
                   <td class="py-3 px-4 text-center font-extrabold text-brand-600">
-                    {{ entry.score.toLocaleString('id-ID') }}
+                    🪙 {{ (entry.coins ?? 0).toLocaleString('id-ID') }}
+                  </td>
+                  <td class="py-3 px-4 text-center font-semibold text-amber-600">
+                    🏆 {{ entry.achievementsCount ?? 0 }} / 5
                   </td>
                   <td class="py-3 px-4 text-center font-semibold">LV. {{ entry.level }}</td>
                   <td class="py-3 px-4 text-center text-neutral-600">{{ entry.kills }} tikus</td>

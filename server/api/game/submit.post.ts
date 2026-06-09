@@ -83,37 +83,45 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // 2. Save to global leaderboard JSON
-  const dataDir = path.join(process.cwd(), 'server/data')
-  const filePath = path.join(dataDir, 'leaderboard.json')
-
-  // Ensure directory exists
-  await fs.mkdir(dataDir, { recursive: true })
-
-  let leaderboard: LeaderboardEntry[] = []
-  try {
-    const data = await fs.readFile(filePath, 'utf-8')
-    leaderboard = JSON.parse(data)
-  } catch (error) {
-    // File doesn't exist yet, start with empty array
+  // 2. Save to database
+  const parseTimeToSeconds = (timeStr: string): number => {
+    const parts = timeStr.split(':')
+    if (parts.length === 2) {
+      return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10)
+    }
+    return 0
   }
 
-  // Create new entry
-  const newEntry: LeaderboardEntry = {
-    userId,
-    name: session.user?.name || 'Guest Player',
-    score,
-    level,
-    time,
-    kills,
-    date: new Date().toISOString()
-  }
+  const timeInSecs = parseTimeToSeconds(time)
 
-  leaderboard.push(newEntry)
-  leaderboard.sort((a, b) => b.score - a.score)
-  leaderboard = leaderboard.slice(0, 10) // Keep top 10
+  const newScore = await prisma.gameScore.create({
+    data: {
+      userId: loggedIn && userId ? userId : null,
+      name: session.user?.name || 'Guest Player',
+      score,
+      level,
+      time,
+      timeInSecs,
+      kills
+    }
+  })
 
-  await fs.writeFile(filePath, JSON.stringify(leaderboard, null, 2), 'utf-8')
+  // Get top 7 for gameover screen
+  const leaderboard = await prisma.gameScore.findMany({
+    take: 7,
+    orderBy: [
+      { score: 'desc' },
+      { timeInSecs: 'desc' }
+    ],
+    select: {
+      name: true,
+      score: true,
+      level: true,
+      time: true,
+      kills: true,
+      userId: true
+    }
+  })
 
   return apiSuccess({
     score,
@@ -123,6 +131,6 @@ export default defineEventHandler(async (event) => {
     leaderboard
   }, earnedCoins > 0 
     ? `Skor dikirim! Selamat, Anda mendapatkan +${earnedCoins} koin BelanjaPedia!` 
-    : 'Skor berhasil dikirim ke leaderboard!'
+    : 'Skor berhasil dikirim ke database!'
   )
 })
