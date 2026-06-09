@@ -250,18 +250,60 @@ onUnmounted(() => {
 
         <!-- Tab Body: Game -->
         <div v-show="activeTab === 'game'" class="flex flex-col gap-4">
-          <div class="w-full h-[540px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-800 shadow-inner relative">
-            <iframe
-              v-if="open"
-              src="/feline-frenzy.html?v=modal"
-              class="absolute inset-0 w-full h-full border-none"
-              allow="autoplay"
-            />
+          <!-- If NOT logged in, show warning screen -->
+          <div v-if="!loggedIn" class="w-full h-[540px] rounded-2xl bg-[#0f172a] border border-neutral-800 flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
+            <!-- Decorative background glow -->
+            <div class="absolute -top-40 -left-40 size-80 bg-brand-500/10 blur-[120px] rounded-full"></div>
+            <div class="absolute -bottom-40 -right-40 size-80 bg-emerald-500/10 blur-[120px] rounded-full"></div>
+
+            <div class="z-10 max-w-md space-y-6">
+              <div class="inline-flex size-20 items-center justify-center bg-brand-500/10 border border-brand-500/20 rounded-3xl text-4xl animate-bounce">
+                🔒
+              </div>
+              <div class="space-y-2">
+                <h3 class="text-2xl font-black text-white tracking-tight">Login Diperlukan!</h3>
+                <p class="text-sm text-neutral-400 leading-relaxed">
+                  Anda harus masuk ke akun BelanjaPedia Anda terlebih dahulu untuk dapat memainkan game Feline Frenzy, mendapatkan Koin Belanja, dan bersaing di Papan Peringkat.
+                </p>
+              </div>
+              <div class="flex flex-col sm:flex-row justify-center gap-3 pt-2">
+                <UButton
+                  to="/login"
+                  color="primary"
+                  size="lg"
+                  class="rounded-full font-bold px-6"
+                  @click="open = false"
+                >
+                  Masuk Sekarang 🔑
+                </UButton>
+                <UButton
+                  variant="ghost"
+                  color="neutral"
+                  size="lg"
+                  class="rounded-full font-semibold text-neutral-400 hover:text-white"
+                  @click="open = false"
+                >
+                  Kembali
+                </UButton>
+              </div>
+            </div>
           </div>
-          <p class="text-[11px] text-neutral-500 text-center -mt-1 flex items-center justify-center gap-1">
-            <UIcon name="i-lucide-info" class="size-3.5" />
-            <span>Klik di dalam game terlebih dahulu agar keyboard mendeteksi gerakan kucing.</span>
-          </p>
+
+          <!-- If logged in, show game iframe -->
+          <template v-else>
+            <div class="w-full h-[540px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-800 shadow-inner relative">
+              <iframe
+                v-if="open"
+                src="/feline-frenzy.html?v=modal"
+                class="absolute inset-0 w-full h-full border-none"
+                allow="autoplay"
+              />
+            </div>
+            <p class="text-[11px] text-neutral-500 text-center -mt-1 flex items-center justify-center gap-1">
+              <UIcon name="i-lucide-info" class="size-3.5" />
+              <span>Klik di dalam game terlebih dahulu agar keyboard mendeteksi gerakan kucing.</span>
+            </p>
+          </template>
         </div>
 
         <!-- Tab Body: Leaderboard -->
