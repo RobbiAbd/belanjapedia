@@ -203,6 +203,8 @@ onUnmounted(() => {
 <template>
   <UModal
     v-model:open="open"
+    :dismissible="false"
+    :close="false"
     :ui="{ content: 'w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-5xl rounded-2xl sm:rounded-3xl overflow-hidden' }"
   >
     <template #header>
@@ -293,17 +295,18 @@ onUnmounted(() => {
           </div>
 
           <template v-else>
-            <div class="w-full h-[min(52vh,420px)] sm:h-[540px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-800 shadow-inner relative">
+            <div class="w-full aspect-[9/16] max-h-[min(72dvh,640px)] sm:aspect-auto sm:max-h-none sm:h-[540px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-800 shadow-inner relative">
               <iframe
                 v-if="open"
-                src="/feline-frenzy.html?v=modal"
+                src="/feline-frenzy.html?v=analog4"
                 class="absolute inset-0 w-full h-full border-none"
                 allow="autoplay"
               />
             </div>
-            <p class="text-[11px] text-neutral-500 text-center -mt-1 flex items-center justify-center gap-1">
-              <UIcon name="i-lucide-info" class="size-3.5" />
-              <span>Klik di dalam game terlebih dahulu agar keyboard mendeteksi gerakan kucing.</span>
+            <p class="text-[11px] text-neutral-500 text-center -mt-1 flex items-center justify-center gap-1 px-2">
+              <UIcon name="i-lucide-info" class="size-3.5 shrink-0" />
+              <span class="sm:hidden">Mainkan vertikal — geser analog kiri bawah untuk menggerakkan kucing.</span>
+              <span class="hidden sm:inline">Klik-tahan analog kiri bawah atau gunakan WASD / tombol arah.</span>
             </p>
           </template>
         </div>

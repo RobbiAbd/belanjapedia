@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Feline Frenzy: Home Survival</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +26,12 @@
       margin: 0;
       padding: 0;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      touch-action: none;
+      overscroll-behavior: none;
     }
 
     body {
@@ -34,7 +40,8 @@
       font-family: 'Outfit', sans-serif;
       overflow: hidden;
       width: 100vw;
-      height: 100vh;
+      height: 100dvh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -328,6 +335,195 @@
       font-weight: 800;
       color: var(--secondary);
     }
+
+    /* Analog joystick — desktop (mouse) & mobile (touch) */
+    #analog-controls {
+      position: absolute;
+      left: 1.25rem;
+      bottom: 1.25rem;
+      z-index: 90;
+      display: none;
+      pointer-events: auto;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    #analog-controls.visible {
+      display: flex;
+    }
+
+    .joystick-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.55);
+      user-select: none;
+    }
+
+    .joystick-base {
+      position: relative;
+      width: 7.5rem;
+      height: 7.5rem;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.55);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .joystick-base:active {
+      cursor: grabbing;
+    }
+
+    .joystick-knob {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 3rem;
+      height: 3rem;
+      margin: -1.5rem 0 0 -1.5rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #e06d20);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 14px var(--primary-glow);
+      transition: transform 0.05s linear;
+      pointer-events: none;
+    }
+
+    .mobile-only {
+      display: none;
+    }
+
+    body.portrait-mode #game-container {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      aspect-ratio: 9 / 16;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
+    }
+
+    body.portrait-mode #analog-controls.visible {
+      left: 0.85rem;
+      bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    body.portrait-mode .joystick-base {
+      width: 6.75rem;
+      height: 6.75rem;
+    }
+
+    body.portrait-mode .joystick-knob {
+      width: 2.75rem;
+      height: 2.75rem;
+      margin: -1.375rem 0 0 -1.375rem;
+    }
+
+    @media (orientation: portrait) and (max-width: 900px) {
+      body {
+        align-items: stretch;
+      }
+
+      #game-container {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        max-height: none;
+        aspect-ratio: 9 / 16;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+
+      #analog-controls.visible {
+        left: 0.85rem;
+        bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+      }
+
+      .joystick-base {
+        width: 6.75rem;
+        height: 6.75rem;
+      }
+
+      .joystick-knob {
+        width: 2.75rem;
+        height: 2.75rem;
+        margin: -1.375rem 0 0 -1.375rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        align-items: stretch;
+      }
+
+      #game-container {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+        max-height: none;
+        aspect-ratio: 9 / 16;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+
+      .screen-overlay {
+        padding: 1rem;
+        overflow-y: auto;
+      }
+
+      .menu-card,
+      .leaderboard-card {
+        padding: 1.25rem;
+        border-radius: 18px;
+        max-width: 100%;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .tagline {
+        font-size: 0.85rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .instructions {
+        margin-bottom: 1.25rem;
+        padding: 0.85rem 1rem;
+      }
+
+      .instruction-item {
+        font-size: 0.82rem;
+      }
+
+      .btn {
+        padding: 0.85rem 1.25rem;
+        font-size: 1rem;
+      }
+
+      #sound-toggle {
+        top: 0.65rem;
+        right: 0.65rem;
+        width: 36px;
+        height: 36px;
+      }
+
+      .mobile-only {
+        display: flex;
+      }
+
+      .desktop-only {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -344,7 +540,10 @@
 
         <div class="instructions">
           <div class="instruction-item">
-            <span class="key-badge">WASD</span> atau <span class="key-badge">Arah</span> &nbsp;Gerakkan Kucing
+            🕹️ &nbsp;Analog kiri bawah — sentuh/geser (HP) atau klik-tahan (desktop)
+          </div>
+          <div class="instruction-item">
+            <span class="key-badge">WASD</span> atau <span class="key-badge">Arah</span> &nbsp;Alternatif gerak kucing
           </div>
           <div class="instruction-item">
             🎯 &nbsp;Kucing otomatis menyerang tikus terdekat
@@ -402,11 +601,55 @@
       </div>
     </div>
 
+    <!-- Analog Joystick -->
+    <div id="analog-controls" aria-label="Kontrol analog gerak kucing">
+      <div id="joystick-base" class="joystick-base">
+        <div id="joystick-knob" class="joystick-knob"></div>
+      </div>
+      <span class="joystick-label">Gerak</span>
+    </div>
+
     <!-- The Canvas -->
     <canvas id="gameCanvas"></canvas>
   </div>
 
-  <script>
+  <script type="module">
+    import {
+      BASE_PLAYER_SPEED,
+      calcPlayerSpeed,
+      calcEnemySpeed,
+      calcEnemySpawnCount,
+      calcProjectileCount,
+      calcProjectileSpread,
+      calcScore,
+      calcShootInterval,
+      calcEnemySpawnIntervalMs,
+      calcNextXpNeeded,
+      normalizeMovement,
+      shouldShowAnalogControls,
+      calcJoystickVector,
+      getLogicalDimensions
+    } from '/game-math.mjs?v=4';
+
+    let gameWidth = 1280;
+    let gameHeight = 720;
+    let gameOrientation = 'landscape';
+    let isPlaying = false;
+
+    let player;
+    let enemies = [];
+    let projectiles = [];
+    let catnips = [];
+    let particles = [];
+    let floatingTexts = [];
+    let timeElapsed = 0;
+    let enemySpawnTimer = 0;
+    let enemySpawnInterval = 1500;
+    let auraDamageTimer = 0;
+    let auraDamageInterval = 300;
+    let killCount = 0;
+    let lastTime = 0;
+
     const BP_CAT_IMAGE = new Image();
     BP_CAT_IMAGE.src = '/images/belanjapedia_icon.png';
 
@@ -536,23 +779,149 @@
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Set logical aspect ratio 1280x720 (720p)
-    const LOGICAL_WIDTH = 1280;
-    const LOGICAL_HEIGHT = 720;
-    canvas.width = LOGICAL_WIDTH;
-    canvas.height = LOGICAL_HEIGHT;
+    function applyCanvasLayout() {
+      const dims = getLogicalDimensions(window.innerWidth, window.innerHeight);
+      gameWidth = dims.width;
+      gameHeight = dims.height;
+      gameOrientation = dims.orientation;
+      canvas.width = gameWidth;
+      canvas.height = gameHeight;
+      document.body.classList.toggle('portrait-mode', dims.orientation === 'portrait');
+      syncAnalogControlsVisibility();
+
+      if (player) {
+        player.x = Math.max(player.size, Math.min(gameWidth - player.size, player.x));
+        player.y = Math.max(player.size, Math.min(gameHeight - player.size, player.y));
+      }
+    }
 
     // Controls state
     const keys = {};
+    const touchInput = { dx: 0, dy: 0, active: false };
+    const JOYSTICK_MAX_RADIUS = 40;
+
     window.addEventListener('keydown', (e) => {
       keys[e.code] = true;
-      // Prevent browser scrolling on space/arrow keys
-      if(['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.code) > -1) {
+      if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
         e.preventDefault();
       }
     });
     window.addEventListener('keyup', (e) => {
       keys[e.code] = false;
+    });
+
+    const analogControls = document.getElementById('analog-controls');
+    const joystickBase = document.getElementById('joystick-base');
+    const joystickKnob = document.getElementById('joystick-knob');
+    let activeTouchId = null;
+    let mouseJoystickActive = false;
+    let joystickCenter = { x: 0, y: 0 };
+
+    function resetJoystick() {
+      touchInput.dx = 0;
+      touchInput.dy = 0;
+      touchInput.active = false;
+      if (joystickKnob) {
+        joystickKnob.style.transform = 'translate(0px, 0px)';
+      }
+    }
+
+    function setJoystickCenter() {
+      const rect = joystickBase.getBoundingClientRect();
+      joystickCenter = {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+
+    function updateJoystickVisual(offsetX, offsetY) {
+      const distance = Math.hypot(offsetX, offsetY);
+      const clampedDistance = Math.min(distance, JOYSTICK_MAX_RADIUS);
+      const angle = Math.atan2(offsetY, offsetX);
+      const visualX = Math.cos(angle) * clampedDistance;
+      const visualY = Math.sin(angle) * clampedDistance;
+      joystickKnob.style.transform = `translate(${visualX}px, ${visualY}px)`;
+    }
+
+    function applyJoystickFromPoint(clientX, clientY) {
+      const offsetX = clientX - joystickCenter.x;
+      const offsetY = clientY - joystickCenter.y;
+      const movement = calcJoystickVector(offsetX, offsetY, JOYSTICK_MAX_RADIUS);
+      touchInput.dx = movement.dx;
+      touchInput.dy = movement.dy;
+      touchInput.active = movement.active;
+      updateJoystickVisual(offsetX, offsetY);
+    }
+
+    function syncAnalogControlsVisibility() {
+      if (!analogControls) return;
+
+      const showControls = shouldShowAnalogControls(isPlaying);
+      analogControls.classList.toggle('visible', showControls);
+      if (!showControls) {
+        activeTouchId = null;
+        mouseJoystickActive = false;
+        resetJoystick();
+      }
+    }
+
+    function bindJoystickEvents() {
+      joystickBase.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (activeTouchId !== null) return;
+        mouseJoystickActive = false;
+        const touch = e.changedTouches[0];
+        activeTouchId = touch.identifier;
+        setJoystickCenter();
+        applyJoystickFromPoint(touch.clientX, touch.clientY);
+      }, { passive: false });
+
+      window.addEventListener('touchmove', (e) => {
+        if (activeTouchId === null) return;
+        const touch = Array.from(e.changedTouches).find(t => t.identifier === activeTouchId);
+        if (!touch) return;
+        e.preventDefault();
+        applyJoystickFromPoint(touch.clientX, touch.clientY);
+      }, { passive: false });
+
+      const endTouchJoystick = (e) => {
+        const touch = Array.from(e.changedTouches).find(t => t.identifier === activeTouchId);
+        if (!touch) return;
+        activeTouchId = null;
+        resetJoystick();
+      };
+
+      window.addEventListener('touchend', endTouchJoystick, { passive: true });
+      window.addEventListener('touchcancel', endTouchJoystick, { passive: true });
+
+      joystickBase.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        if (activeTouchId !== null) return;
+        mouseJoystickActive = true;
+        setJoystickCenter();
+        applyJoystickFromPoint(e.clientX, e.clientY);
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!mouseJoystickActive) return;
+        applyJoystickFromPoint(e.clientX, e.clientY);
+      });
+
+      const endMouseJoystick = () => {
+        if (!mouseJoystickActive) return;
+        mouseJoystickActive = false;
+        resetJoystick();
+      };
+
+      window.addEventListener('mouseup', endMouseJoystick);
+      window.addEventListener('blur', endMouseJoystick);
+    }
+
+    bindJoystickEvents();
+    applyCanvasLayout();
+    window.addEventListener('resize', applyCanvasLayout);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(applyCanvasLayout, 120);
     });
 
     // --- ENTITY CLASSES ---
@@ -563,7 +932,7 @@
         this.x = x;
         this.y = y;
         this.size = 32;
-        this.speed = 2;
+        this.speed = BASE_PLAYER_SPEED;
         this.health = 9;
         this.maxHealth = 9;
         this.level = 1;
@@ -582,27 +951,28 @@
           this.invulnerableTime -= deltaTime;
         }
 
-        // Movement handling
         let dx = 0;
         let dy = 0;
 
-        if (keys['KeyW'] || keys['ArrowUp']) dy -= 1;
-        if (keys['KeyS'] || keys['ArrowDown']) dy += 1;
-        if (keys['KeyA'] || keys['ArrowLeft']) dx -= 1;
-        if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
-
-        // Normalise vector for diagonal speed consistency
-        if (dx !== 0 && dy !== 0) {
-          dx *= 0.7071;
-          dy *= 0.7071;
+        if (touchInput.active) {
+          dx = touchInput.dx;
+          dy = touchInput.dy;
+        } else {
+          if (keys['KeyW'] || keys['ArrowUp']) dy -= 1;
+          if (keys['KeyS'] || keys['ArrowDown']) dy += 1;
+          if (keys['KeyA'] || keys['ArrowLeft']) dx -= 1;
+          if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
+          const movement = normalizeMovement(dx, dy);
+          dx = movement.dx;
+          dy = movement.dy;
         }
 
         this.x += dx * this.speed;
         this.y += dy * this.speed;
 
         // Bounds constraints
-        this.x = Math.max(this.size, Math.min(LOGICAL_WIDTH - this.size, this.x));
-        this.y = Math.max(this.size, Math.min(LOGICAL_HEIGHT - this.size, this.y));
+        this.x = Math.max(this.size, Math.min(gameWidth - this.size, this.x));
+        this.y = Math.max(this.size, Math.min(gameHeight - this.size, this.y));
 
         // Auto-shoot timer
         this.shootTimer += deltaTime;
@@ -670,14 +1040,14 @@
         if (nearestEnemy) {
           // Spawn Yarn Ball projectile directed towards nearest enemy
           let angle = Math.atan2(nearestEnemy.y - this.y, nearestEnemy.x - this.x);
-          let numProjectiles = this.level;
+          const numProjectiles = calcProjectileCount(this.level);
           if (numProjectiles === 1) {
             projectiles.push(new Projectile(this.x, this.y, angle));
           } else {
-            let spread = 0.25; // radians spread between projectiles
-            let startAngle = angle - (spread * (numProjectiles - 1)) / 2;
+            const spread = calcProjectileSpread();
+            const startAngle = angle - (spread * (numProjectiles - 1)) / 2;
             for (let i = 0; i < numProjectiles; i++) {
-              let projAngle = startAngle + i * spread;
+              const projAngle = startAngle + i * spread;
               projectiles.push(new Projectile(this.x, this.y, projAngle));
             }
           }
@@ -690,10 +1060,9 @@
          if (this.xp >= this.xpNeeded) {
            this.xp -= this.xpNeeded;
            this.level++;
-           this.speed = 2 * Math.pow(1.15, this.level - 1); // Speed increases by 15% per level
-           this.xpNeeded = Math.floor(this.xpNeeded * 1.3) + 5;
-           // Scale weapon speed (yarn ball shoot interval reduction)
-           this.shootInterval = Math.max(300, 1000 - (this.level - 1) * 60);
+           this.speed = calcPlayerSpeed(this.level);
+           this.xpNeeded = calcNextXpNeeded(this.xpNeeded);
+           this.shootInterval = calcShootInterval(this.level);
            sound.playLevelUp();
            
            // Spawn Level Up text
@@ -753,9 +1122,9 @@
       isOffScreen() {
         return (
           this.x < -this.radius ||
-          this.x > LOGICAL_WIDTH + this.radius ||
+          this.x > gameWidth + this.radius ||
           this.y < -this.radius ||
-          this.y > LOGICAL_HEIGHT + this.radius
+          this.y > gameHeight + this.radius
         );
       }
     }
@@ -766,13 +1135,13 @@
         this.x = x;
         this.y = y;
         this.size = 24;
-        this.speed = playerSpeed * 0.5;
+        this.speed = calcEnemySpeed(playerSpeed);
         this.color = '#6b7280'; // Gray
         this.health = 1;
       }
 
       update(playerX, playerY, playerSpeed) {
-        this.speed = playerSpeed * 0.5;
+        this.speed = calcEnemySpeed(playerSpeed);
         let angle = Math.atan2(playerY - this.y, playerX - this.x);
         this.x += Math.cos(angle) * this.speed;
         this.y += Math.sin(angle) * this.speed;
@@ -917,25 +1286,8 @@
 
     // --- GAME ENGINE STATE & LOOP ---
 
-    let player;
-    let enemies = [];
-    let projectiles = [];
-    let catnips = [];
-    let particles = [];
-    let floatingTexts = [];
-
-    let isPlaying = false;
-    let timeElapsed = 0; // seconds
-    let enemySpawnTimer = 0;
-    let enemySpawnInterval = 1500; // in milliseconds
-    let auraDamageTimer = 0;
-    let auraDamageInterval = 300; // Deal area damage every 300ms
-
-    let killCount = 0;
-    let lastTime = 0;
-
     function resetGame() {
-      player = new Player(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
+      player = new Player(gameWidth / 2, gameHeight / 2);
       enemies = [];
       projectiles = [];
       catnips = [];
@@ -954,7 +1306,7 @@
     }
 
     function spawnEnemy() {
-      let count = 1 + Math.floor(timeElapsed / 7);
+      const count = calcEnemySpawnCount(timeElapsed);
       for (let i = 0; i < count; i++) {
         // Spawn at random border outside the canvas
         let side = Math.floor(Math.random() * 4);
@@ -962,17 +1314,17 @@
         let offset = 40;
 
         if (side === 0) { // Top
-          x = Math.random() * LOGICAL_WIDTH;
+          x = Math.random() * gameWidth;
           y = -offset;
         } else if (side === 1) { // Right
-          x = LOGICAL_WIDTH + offset;
-          y = Math.random() * LOGICAL_HEIGHT;
+          x = gameWidth + offset;
+          y = Math.random() * gameHeight;
         } else if (side === 2) { // Bottom
-          x = Math.random() * LOGICAL_WIDTH;
-          y = LOGICAL_HEIGHT + offset;
+          x = Math.random() * gameWidth;
+          y = gameHeight + offset;
         } else { // Left
           x = -offset;
-          y = Math.random() * LOGICAL_HEIGHT;
+          y = Math.random() * gameHeight;
         }
 
         enemies.push(new Enemy(x, y, player.speed));
@@ -1065,46 +1417,65 @@
 
     // Draw HUD/Non-Diegetic UI
     function drawHUD() {
-      // 1. Draw XP Bar at top edge
+      const isPortrait = gameOrientation === 'portrait';
+      const xpBarHeight = isPortrait ? 8 : 12;
+      const hudBarHeight = isPortrait ? 36 : 50;
+
       let xpPct = player.xp / player.xpNeeded;
       ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.fillRect(0, 0, LOGICAL_WIDTH, 12);
-      ctx.fillStyle = '#10b981'; // Green XP
-      ctx.fillRect(0, 0, LOGICAL_WIDTH * xpPct, 12);
+      ctx.fillRect(0, 0, gameWidth, xpBarHeight);
+      ctx.fillStyle = '#10b981';
+      ctx.fillRect(0, 0, gameWidth * xpPct, xpBarHeight);
 
-      // Bar border line
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(0, 12);
-      ctx.lineTo(LOGICAL_WIDTH, 12);
+      ctx.moveTo(0, xpBarHeight);
+      ctx.lineTo(gameWidth, xpBarHeight);
       ctx.stroke();
 
-      // 2. HUD text (Lives & Time & Level)
       ctx.save();
-      // Draw background bar for HUD text
       ctx.fillStyle = 'rgba(11, 15, 25, 0.6)';
-      ctx.fillRect(0, 12, LOGICAL_WIDTH, 50);
+      ctx.fillRect(0, xpBarHeight, gameWidth, hudBarHeight);
 
-      // Lives Heart icon
-      ctx.fillStyle = '#ef4444';
-      ctx.font = "24px 'Outfit', sans-serif";
-      ctx.textAlign = 'left';
-      ctx.fillText("❤️ " + player.health, 30, 46);
+      const mins = Math.floor(timeElapsed / 60);
+      const secs = Math.floor(timeElapsed % 60);
+      const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
-      // Level Indicator
-      ctx.fillStyle = '#ffb86b';
-      ctx.font = "bold 20px 'Outfit', sans-serif";
-      ctx.textAlign = 'center';
-      ctx.fillText(`LV. ${player.level}`, LOGICAL_WIDTH / 2 - 100, 45);
+      if (isPortrait) {
+        ctx.fillStyle = '#ef4444';
+        ctx.font = "bold 16px 'Outfit', sans-serif";
+        ctx.textAlign = 'left';
+        ctx.fillText(`❤️ ${player.health}`, 14, xpBarHeight + 24);
 
-      // Timer (formatted mm:ss)
-      let mins = Math.floor(timeElapsed / 60);
-      let secs = Math.floor(timeElapsed % 60);
-      let timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-      ctx.fillStyle = '#f3f4f6';
-      ctx.font = "bold 22px 'Outfit', sans-serif";
-      ctx.fillText(`⏱️ ${timeStr}`, LOGICAL_WIDTH / 2 + 100, 45);
+        ctx.fillStyle = '#ffb86b';
+        ctx.textAlign = 'center';
+        ctx.fillText(`LV.${player.level}`, gameWidth * 0.38, xpBarHeight + 24);
+
+        ctx.fillStyle = '#f3f4f6';
+        ctx.fillText(`⏱️ ${timeStr}`, gameWidth * 0.62, xpBarHeight + 24);
+
+        ctx.textAlign = 'right';
+        ctx.fillText(`🐭 ${killCount}`, gameWidth - 14, xpBarHeight + 24);
+      } else {
+        ctx.fillStyle = '#ef4444';
+        ctx.font = "24px 'Outfit', sans-serif";
+        ctx.textAlign = 'left';
+        ctx.fillText("❤️ " + player.health, 30, xpBarHeight + 34);
+
+        ctx.fillStyle = '#ffb86b';
+        ctx.font = "bold 20px 'Outfit', sans-serif";
+        ctx.textAlign = 'center';
+        ctx.fillText(`LV. ${player.level}`, gameWidth / 2 - 100, xpBarHeight + 33);
+
+        ctx.fillStyle = '#f3f4f6';
+        ctx.font = "bold 22px 'Outfit', sans-serif";
+        ctx.fillText(`⏱️ ${timeStr}`, gameWidth / 2 + 100, xpBarHeight + 33);
+
+        ctx.font = "bold 18px 'Outfit', sans-serif";
+        ctx.textAlign = 'right';
+        ctx.fillText(`🐭 ${killCount}`, gameWidth - 30, xpBarHeight + 33);
+      }
 
       ctx.restore();
     }
@@ -1121,8 +1492,7 @@
       // Update game stats
       timeElapsed += deltaTime / 1000;
 
-      // Enemy spawn timer scaling: get faster as time passes
-      enemySpawnInterval = Math.max(500, 1500 - (timeElapsed * 5));
+      enemySpawnInterval = calcEnemySpawnIntervalMs(timeElapsed);
       enemySpawnTimer += deltaTime;
       if (enemySpawnTimer >= enemySpawnInterval) {
         enemySpawnTimer = 0;
@@ -1176,22 +1546,21 @@
       }
 
       // 2. RENDER PHASE
-      ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+      ctx.clearRect(0, 0, gameWidth, gameHeight);
 
-      // Draw floor grid pattern for gaming aesthetic
       ctx.strokeStyle = '#1e293b';
       ctx.lineWidth = 1;
       const gridSize = 50;
-      for (let x = 0; x < LOGICAL_WIDTH; x += gridSize) {
+      for (let x = 0; x < gameWidth; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, LOGICAL_HEIGHT);
+        ctx.lineTo(x, gameHeight);
         ctx.stroke();
       }
-      for (let y = 0; y < LOGICAL_HEIGHT; y += gridSize) {
+      for (let y = 0; y < gameHeight; y += gridSize) {
         ctx.beginPath();
         ctx.moveTo(0, y);
-        ctx.lineTo(LOGICAL_WIDTH, y);
+        ctx.lineTo(gameWidth, y);
         ctx.stroke();
       }
 
@@ -1240,9 +1609,10 @@
 
     function gameOver() {
        isPlaying = false;
+       syncAnalogControlsVisibility();
        sound.playGameOver();
 
-       let score = (killCount * 10) + (player.level * 50) + Math.floor(timeElapsed);
+       const score = calcScore(killCount, player.level, timeElapsed);
 
        // Update overlay UI
        let mins = Math.floor(timeElapsed / 60);
@@ -1296,20 +1666,19 @@
     const btnStart = document.getElementById('btn-start');
     const btnRestart = document.getElementById('btn-restart');
 
-    btnStart.addEventListener('click', () => {
-      sound.init(); // Init Audio Context
+    function startPlaying() {
+      sound.init();
       startScreen.classList.add('hidden');
-      resetGame();
-      isPlaying = true;
-      requestAnimationFrame(gameLoop);
-    });
-
-    btnRestart.addEventListener('click', () => {
       gameoverScreen.classList.add('hidden');
+      resetJoystick();
       resetGame();
       isPlaying = true;
+      syncAnalogControlsVisibility();
       requestAnimationFrame(gameLoop);
-    });
+    }
+
+    btnStart.addEventListener('click', startPlaying);
+    btnRestart.addEventListener('click', startPlaying);
 
   </script>
 </body>

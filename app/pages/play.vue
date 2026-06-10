@@ -31,9 +31,9 @@ onMounted(async () => {
 
     <!-- Game Container with Premium Layout (Full Width 720p) -->
     <div class="bg-neutral-900 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-neutral-800 p-3 sm:p-4 mb-6 sm:mb-8">
-      <div class="w-full h-[min(60vh,420px)] sm:h-[min(70vh,600px)] lg:h-[720px] rounded-xl sm:rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-700">
+      <div class="w-full aspect-[9/16] max-h-[min(78dvh,700px)] sm:aspect-video sm:max-h-none sm:h-[min(70vh,600px)] lg:h-[720px] rounded-xl sm:rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-700 mx-auto max-w-md sm:max-w-none">
         <iframe
-          src="/feline-frenzy.html?v=720p"
+          src="/feline-frenzy.html?v=analog4"
           class="w-full h-full border-none"
           allow="autoplay"
         />
@@ -50,7 +50,10 @@ onMounted(async () => {
         <ul class="space-y-4 text-sm text-neutral-700">
           <li class="flex gap-3">
             <span class="flex-shrink-0 size-6 bg-brand-50 text-brand-600 font-bold rounded-full flex items-center justify-center">1</span>
-            <span>Gunakan tombol <kbd class="px-1.5 py-0.5 bg-neutral-100 border border-neutral-300 rounded font-mono text-xs">W</kbd> <kbd class="px-1.5 py-0.5 bg-neutral-100 border border-neutral-300 rounded font-mono text-xs">A</kbd> <kbd class="px-1.5 py-0.5 bg-neutral-100 border border-neutral-300 rounded font-mono text-xs">S</kbd> <kbd class="px-1.5 py-0.5 bg-neutral-100 border border-neutral-300 rounded font-mono text-xs">D</kbd> atau tombol <span class="font-semibold text-brand-600">Arah</span> untuk menggerakkan kucing.</span>
+            <span>
+              <span class="sm:hidden">Pegang HP vertikal, lalu <span class="font-semibold text-brand-600">geser analog</span> kiri bawah.</span>
+              <span class="hidden sm:inline">Gunakan <span class="font-semibold text-brand-600">analog kiri bawah</span> (klik-tahan) atau <kbd class="px-1.5 py-0.5 bg-neutral-100 border border-neutral-300 rounded font-mono text-xs">WASD</kbd> / tombol arah.</span>
+            </span>
           </li>
           <li class="flex gap-3">
             <span class="flex-shrink-0 size-6 bg-brand-50 text-brand-600 font-bold rounded-full flex items-center justify-center">2</span>
@@ -75,7 +78,8 @@ onMounted(async () => {
         </div>
         <div class="mt-4 pt-4 border-t border-brand-200/50 text-xs text-brand-700 flex items-center gap-2">
           <UIcon name="i-lucide-info" class="size-4" />
-          <span>Tips: Klik area game terlebih dahulu agar tombol navigasi keyboard Anda dapat berfungsi mendeteksi gerakan kucing.</span>
+          <span class="sm:hidden">Tips: Sentuh analog lalu geser jari untuk menggerakkan kucing.</span>
+          <span class="hidden sm:inline">Tips: Klik-tahan analog atau keyboard — keduanya bisa dipakai bersamaan.</span>
         </div>
       </div>
     </div>
