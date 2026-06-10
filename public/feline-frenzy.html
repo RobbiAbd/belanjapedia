@@ -58,6 +58,13 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      touch-action: none; /* Cegah scroll saat tap/drag */
+    }
+
+    @media (max-width: 768px) {
+      #game-container {
+        aspect-ratio: auto; /* Allow flexible height on mobile */
+      }
     }
 
     /* Canvas Area */
@@ -69,6 +76,86 @@
     }
 
     /* UI Overlay Screens */
+    #sound-toggle, #pause-toggle {
+      position: absolute;
+      top: 1rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: all 0.2s ease;
+      z-index: 100;
+    }
+
+    #sound-toggle {
+      right: 1rem;
+    }
+
+    #pause-toggle {
+      right: 4.5rem;
+    }
+
+    /* Level Up Screen */
+    #levelup-screen {
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+    }
+    .levelup-container {
+      background: #0f172a;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      max-width: 800px;
+      width: 90%;
+      text-align: center;
+      border: 2px solid #f59e0b;
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+    }
+    .skill-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      width: 220px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .skill-card:hover {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #f59e0b;
+      transform: translateY(-5px);
+    }
+    .skill-icon {
+      font-size: 3rem;
+    }
+    .skill-title {
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.1rem;
+      font-family: 'Outfit', sans-serif;
+    }
+    .skill-desc {
+      color: #9ca3af;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      font-family: 'Outfit', sans-serif;
+    }
+    .skill-level {
+      color: #f59e0b;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-top: auto;
+    }
+    
     .screen-overlay {
       position: absolute;
       top: 0;
@@ -223,29 +310,6 @@
       transform: translateY(0);
     }
 
-    /* Speaker toggle */
-    #sound-toggle {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--glass-border);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      cursor: pointer;
-      z-index: 100;
-      transition: all 0.2s;
-    }
-
-    #sound-toggle:hover {
-      background: rgba(255, 255, 255, 0.15);
-      transform: scale(1.05);
-    }
     /* Game Over split layout */
     #gameover-screen {
       display: flex;
@@ -328,13 +392,41 @@
       font-weight: 800;
       color: var(--secondary);
     }
+
+    /* Mobile Joystick - Floating */
+    #joystick-base {
+      display: none; /* Hidden by default, shown on touch */
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      z-index: 50;
+      transform: translate(-50%, -50%); /* Center at touch point */
+      pointer-events: none;
+      touch-action: none;
+    }
+
+    #joystick-stick {
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 138, 61, 0.8);
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(255, 138, 61, 0.5);
+    }
   </style>
 </head>
 <body>
 
   <div id="game-container">
-    <!-- Sound Toggle -->
-    <button id="sound-toggle" title="Matikan/Aktifkan Suara">🔊</button>
+    <!-- Sound & Pause Toggle -->
+    <button id="sound-toggle" title="Toggle Sound">🔊</button>
+    <button id="pause-toggle" title="Pause Game">⏸️</button>
 
     <!-- Start Screen Overlay -->
     <div id="start-screen" class="screen-overlay">
@@ -400,6 +492,22 @@
           </table>
         </div>
       </div>
+    </div>
+
+    <!-- Level Up Screen Overlay -->
+    <div id="levelup-screen" class="screen-overlay" style="display: none;">
+      <div class="levelup-container">
+        <h2 style="color: #f59e0b; font-size: 2.5rem; margin-bottom: 0.5rem; font-family: 'Outfit', sans-serif;">LEVEL UP!</h2>
+        <p style="color: #cbd5e1; margin-bottom: 2rem; font-family: 'Outfit', sans-serif;">Pilih satu skill baru untuk dipelajari:</p>
+        <div id="skill-choices" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <!-- Skill cards injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Analog Joystick for Mobile -->
+    <div id="joystick-base">
+      <div id="joystick-stick"></div>
     </div>
 
     <!-- The Canvas -->
@@ -531,16 +639,33 @@
       soundToggle.textContent = sound.muted ? '🔇' : '🔊';
     });
 
+    // Toggle pause button
+    let isPaused = false;
+    const pauseToggle = document.getElementById('pause-toggle');
+    pauseToggle.addEventListener('click', () => {
+      if (!isPlaying) return;
+      isPaused = !isPaused;
+      pauseToggle.textContent = isPaused ? '▶️' : '⏸️';
+    });
+
 
     // --- GAME ENGINE ---
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Set logical aspect ratio 1280x720 (720p)
-    const LOGICAL_WIDTH = 1280;
-    const LOGICAL_HEIGHT = 720;
-    canvas.width = LOGICAL_WIDTH;
-    canvas.height = LOGICAL_HEIGHT;
+    // Set dynamic logical aspect ratio
+    let LOGICAL_WIDTH = 1280;
+    let LOGICAL_HEIGHT = 720;
+    
+    function resizeCanvas() {
+      const container = document.getElementById('game-container');
+      LOGICAL_WIDTH = container.clientWidth;
+      LOGICAL_HEIGHT = container.clientHeight;
+      canvas.width = LOGICAL_WIDTH;
+      canvas.height = LOGICAL_HEIGHT;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
     // Controls state
     const keys = {};
@@ -555,6 +680,81 @@
       keys[e.code] = false;
     });
 
+    // --- JOYSTICK ENGINE ---
+    const gameContainer = document.getElementById('game-container');
+    const joystickBase = document.getElementById('joystick-base');
+    const joystickStick = document.getElementById('joystick-stick');
+    let joystickActive = false;
+    let joystickVector = { x: 0, y: 0 };
+    let joystickCenter = { x: 0, y: 0 };
+    const maxRadius = 35;
+
+    function handleTouchStart(e) {
+      if (e.target.tagName === 'BUTTON' || e.target.closest('.menu-card') || e.target.closest('#sound-toggle')) return;
+      e.preventDefault();
+      
+      joystickActive = true;
+      const touch = e.touches ? e.touches[0] : e;
+      const rect = gameContainer.getBoundingClientRect();
+      
+      joystickCenter = {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top
+      };
+      
+      joystickBase.style.display = 'block';
+      joystickBase.style.left = `${joystickCenter.x}px`;
+      joystickBase.style.top = `${joystickCenter.y}px`;
+      
+      updateJoystick(touch.clientX, touch.clientY);
+    }
+
+    function handleTouchMove(e) {
+      if (!joystickActive) return;
+      e.preventDefault();
+      const touch = e.touches ? e.touches[0] : e;
+      updateJoystick(touch.clientX, touch.clientY);
+    }
+
+    function handleTouchEnd(e) {
+      if (!joystickActive) return;
+      e.preventDefault();
+      joystickActive = false;
+      joystickVector = { x: 0, y: 0 };
+      joystickStick.style.transform = `translate(-50%, -50%)`;
+      joystickBase.style.display = 'none';
+    }
+
+    function updateJoystick(clientX, clientY) {
+      const rect = gameContainer.getBoundingClientRect();
+      const dx = (clientX - rect.left) - joystickCenter.x;
+      const dy = (clientY - rect.top) - joystickCenter.y;
+      const distance = Math.hypot(dx, dy);
+      
+      let mappedX = dx;
+      let mappedY = dy;
+      
+      if (distance > maxRadius) {
+        mappedX = (dx / distance) * maxRadius;
+        mappedY = (dy / distance) * maxRadius;
+      }
+      
+      joystickStick.style.transform = `translate(calc(-50% + ${mappedX}px), calc(-50% + ${mappedY}px))`;
+      
+      joystickVector.x = mappedX / maxRadius;
+      joystickVector.y = mappedY / maxRadius;
+    }
+
+    gameContainer.addEventListener('touchstart', handleTouchStart, { passive: false });
+    gameContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
+    gameContainer.addEventListener('touchend', handleTouchEnd, { passive: false });
+    gameContainer.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+    // Desktop testing support
+    gameContainer.addEventListener('mousedown', handleTouchStart);
+    window.addEventListener('mousemove', handleTouchMove);
+    window.addEventListener('mouseup', handleTouchEnd);
+
     // --- ENTITY CLASSES ---
 
     // 1. PLAYER
@@ -562,24 +762,42 @@
       constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.size = 32;
+        this.size = 37; // 15% larger than original 32
         this.speed = 2;
         this.health = 9;
         this.maxHealth = 9;
-        this.level = 1;
+        this.auraRadius = 80;
+        this.auraPulse = 0;
+        
+        this.skills = {
+          multiShot: 1,
+          piercing: 0,
+          aura: 0,
+          bounce: 0,
+          boomerang: 0,
+          lightning: 0
+        };
         this.xp = 0;
         this.xpNeeded = 10;
+        this.level = 1;
         this.invulnerableTime = 0;
         this.shootTimer = 0;
         this.shootInterval = 1000; // in milliseconds
-        this.auraRadius = 100;
-        this.auraPulse = 0;
       }
 
       update(deltaTime) {
         // Invulnerability frame reduction
         if (this.invulnerableTime > 0) {
           this.invulnerableTime -= deltaTime;
+        }
+
+        // Aura Skill logic
+        if (this.skills.aura > 0) {
+          this.auraPulse -= deltaTime;
+          if (this.auraPulse <= 0) {
+            this.auraPulse = 2000; // 2 seconds
+            auraRings.push({ x: this.x, y: this.y, radius: 10, maxRadius: 100 + this.skills.aura * 30, life: 1.0, damage: this.skills.aura });
+          }
         }
 
         // Movement handling
@@ -591,18 +809,26 @@
         if (keys['KeyA'] || keys['ArrowLeft']) dx -= 1;
         if (keys['KeyD'] || keys['ArrowRight']) dx += 1;
 
-        // Normalise vector for diagonal speed consistency
-        if (dx !== 0 && dy !== 0) {
-          dx *= 0.7071;
-          dy *= 0.7071;
+        // Add joystick vector if active
+        if (typeof joystickActive !== 'undefined' && joystickActive) {
+          dx += joystickVector.x;
+          dy += joystickVector.y;
         }
 
-        this.x += dx * this.speed;
-        this.y += dy * this.speed;
+        // Normalise vector for diagonal speed consistency or joystick magnitude
+        const length = Math.hypot(dx, dy);
+        if (length > 1) {
+          dx /= length;
+          dy /= length;
+        }
+
+        let timeScale = deltaTime / 9.0;
+        this.x += dx * this.speed * timeScale;
+        this.y += dy * this.speed * timeScale;
 
         // Bounds constraints
-        this.x = Math.max(this.size, Math.min(LOGICAL_WIDTH - this.size, this.x));
-        this.y = Math.max(this.size, Math.min(LOGICAL_HEIGHT - this.size, this.y));
+        this.x = Math.max(this.size / 2, Math.min(LOGICAL_WIDTH - this.size / 2, this.x));
+        this.y = Math.max(this.size / 2, Math.min(LOGICAL_HEIGHT - this.size / 2, this.y));
 
         // Auto-shoot timer
         this.shootTimer += deltaTime;
@@ -613,6 +839,17 @@
 
         // Pulse effect for Aura
         this.auraPulse += deltaTime * 0.003;
+        
+        // Aura Auto-fire logic
+        if (this.skills.aura > 0) {
+          // Cooldown berkurang 10% tiap level
+          let auraCooldown = 2000 * Math.pow(0.9, this.skills.aura - 1);
+          if (performance.now() - this.lastAuraTime > auraCooldown) {
+            this.lastAuraTime = performance.now();
+            auras.push(new AuraRing(this.x, this.y, this.skills.aura));
+            sound.playShoot();
+          }
+        }
       }
 
       draw(ctx) {
@@ -621,8 +858,6 @@
 
         ctx.save();
         ctx.translate(this.x, this.y);
-
-        // Draw Salted Fish Aura (Area Weapon) - GREEN CIRCLE RENDERING REMOVED AS REQUESTED
 
         // Draw Player body
         if (isFlashing) {
@@ -670,15 +905,38 @@
         if (nearestEnemy) {
           // Spawn Yarn Ball projectile directed towards nearest enemy
           let angle = Math.atan2(nearestEnemy.y - this.y, nearestEnemy.x - this.x);
-          let numProjectiles = this.level;
+          let numProjectiles = this.skills.multiShot;
+          let isOdd = (numProjectiles % 2 !== 0);
+
           if (numProjectiles === 1) {
             projectiles.push(new Projectile(this.x, this.y, angle));
-          } else {
+          } else if (isOdd) {
+            // Ganjil: Mengerucut (Cone spread)
             let spread = 0.25; // radians spread between projectiles
             let startAngle = angle - (spread * (numProjectiles - 1)) / 2;
             for (let i = 0; i < numProjectiles; i++) {
               let projAngle = startAngle + i * spread;
               projectiles.push(new Projectile(this.x, this.y, projAngle));
+            }
+          } else {
+            // Genap: Sejajar (Parallel / Double shoot style)
+            let perpAngle = angle + Math.PI / 2;
+            let spacing = 18; // pixels between projectiles
+            let startOffset = - (spacing * (numProjectiles - 1)) / 2;
+            for (let i = 0; i < numProjectiles; i++) {
+              let offset = startOffset + i * spacing;
+              let px = this.x + Math.cos(perpAngle) * offset;
+              let py = this.y + Math.sin(perpAngle) * offset;
+              projectiles.push(new Projectile(px, py, angle));
+            }
+          }
+          
+          // Lightning shoot logic
+          if (this.skills.lightning > 0) {
+            if (nearestEnemy) {
+              let lAngle = Math.atan2(nearestEnemy.y - this.y, nearestEnemy.x - this.x);
+              // Tembak 1 peluru petir besar ke arah musuh terdekat
+              lightningProjectiles.push(new LightningProjectile(this.x, this.y, lAngle));
             }
           }
           sound.playShoot();
@@ -686,24 +944,35 @@
       }
 
       addXp(amount) {
-         this.xp += amount;
-         if (this.xp >= this.xpNeeded) {
-           this.xp -= this.xpNeeded;
-           this.level++;
-           this.speed = 2 * Math.pow(1.15, this.level - 1); // Speed increases by 15% per level
-           this.xpNeeded = Math.floor(this.xpNeeded * 1.3) + 5;
-           // Scale weapon speed (yarn ball shoot interval reduction)
-           this.shootInterval = Math.max(300, 1000 - (this.level - 1) * 60);
-           sound.playLevelUp();
-           
-           // Spawn Level Up text
-           floatingTexts.push(new FloatingText("LEVEL UP! ⚡", this.x, this.y - 30, '#ffb86b', 24));
+        this.xp += amount;
+        if (this.xp >= this.xpNeeded) {
+          this.xp -= this.xpNeeded;
+          this.level++;
+          
+          // Kecepatan kucing menggunakan sistem Hard-Cap Limit
+          this.speed = Math.min(2.6, 2.0 + (this.level - 1) * 0.02);
+          
+          // Jeda tembakan berkurang 0.05 detik (50ms) tiap level
+          this.shootInterval = Math.max(200, 1000 - (this.level - 1) * 50);
+          
+          // Setiap naik 2 level (level genap), otomatis dapat bonus 1 peluru
+          if (this.level % 2 === 0) {
+            this.skills.multiShot++;
+          }
+          
+          // Semua kecepatan dibuat stabil / konstan tanpa lonjakan level
+          this.xpNeeded = Math.floor(this.xpNeeded * 1.3) + 5;
+          
+          sound.playLevelUp();
+          
+          floatingTexts.push(new FloatingText("LEVEL UP! ⚡", this.x, this.y - 30, '#ffb86b', 24));
+          triggerLevelUp();
 
-           if (window.parent) {
-             window.parent.postMessage({ type: 'GAME_LEVEL_UP', level: this.level }, '*');
-           }
-         }
-       }
+          if (window.parent) {
+            window.parent.postMessage({ type: 'GAME_LEVEL_UP', level: this.level }, '*');
+          }
+        }
+      }
 
       takeDamage() {
         if (this.invulnerableTime > 0) return;
@@ -719,17 +988,24 @@
       constructor(x, y, angle) {
         this.x = x;
         this.y = y;
-        this.radius = 8;
-        this.speed = 8;
-        this.dx = Math.cos(angle) * this.speed;
-        this.dy = Math.sin(angle) * this.speed;
+        this.radius = 6;
+        let speed = 8; // Dikembalikan ke normal
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
         this.color = '#f43f5e'; // Vibrant pink/magenta
         this.damage = 1;
+        this.pierceHit = 0;
+        this.maxPierce = player ? player.skills.piercing : 0;
+        this.bounceCount = 0;
+        this.maxBounce = player ? player.skills.bounce : 0;
+        this.hitTargets = new Set();
       }
 
-      update() {
-        this.x += this.dx;
-        this.y += this.dy;
+      update(deltaTime) {
+        let timeScale = deltaTime / 9.0;
+        this.x += this.dx * timeScale;
+        this.y += this.dy * timeScale;
+        // Peluru memantul di dinding telah dihapus, peluru akan memantul pada musuh di logika collision
       }
 
       draw(ctx) {
@@ -760,22 +1036,158 @@
       }
     }
 
+    // 2.2. HEALTH DROP (P3K)
+    class HealthDrop {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 12;
+        this.color = '#ef4444';
+        this.life = 20000;
+      }
+      update(playerX, playerY, deltaTime) {
+        this.life -= deltaTime;
+      }
+      draw(ctx) {
+        if (this.life < 3000 && Math.floor(Date.now() / 150) % 2 === 0) return;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#10b981';
+
+        // Kotak Putih
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-this.radius, -this.radius, this.radius * 2, this.radius * 2);
+        
+        // Palang Merah
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-3, -8, 6, 16);
+        ctx.fillRect(-8, -3, 16, 6);
+        
+        ctx.restore();
+      }
+    }
+
+    // 2.3 LIGHTNING PROJECTILE
+    class LightningProjectile {
+      constructor(x, y, angle) {
+        this.x = x;
+        this.y = y;
+        this.radius = 16; // Diperbesar 2x lipat dari 8 ke 16
+        let speed = 18;  // Dibuat lebih cepat agar kilat lebih terasa instan
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
+        this.color = '#3b82f6'; // Blue
+        this.damage = 1;
+        this.tail = [];
+        this.maxLength = 10; // Ekor lebih panjang
+      }
+      update(deltaTime) {
+        let timeScale = deltaTime / 9.0;
+        this.tail.push({x: this.x, y: this.y});
+        if (this.tail.length > this.maxLength) this.tail.shift();
+        this.x += this.dx * timeScale;
+        this.y += this.dy * timeScale;
+      }
+      draw(ctx) {
+        ctx.save();
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.color;
+        ctx.strokeStyle = '#93c5fd'; // Warna petir biru muda terang
+        ctx.lineWidth = 5; // Lebih tebal
+        
+        ctx.beginPath();
+        if (this.tail.length > 0) {
+          ctx.moveTo(this.tail[0].x, this.tail[0].y);
+          for (let i=1; i<this.tail.length; i++) {
+            // Efek zig-zag patah-patah yang jauh lebih ekstrem
+            let tx = this.tail[i].x + (Math.random()-0.5)*20;
+            let ty = this.tail[i].y + (Math.random()-0.5)*20;
+            ctx.lineTo(tx, ty);
+          }
+          ctx.lineTo(this.x, this.y);
+          ctx.stroke();
+          
+          // Gambar cabang petir (ranting kecil)
+          if (this.tail.length > 3) {
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#bfdbfe';
+            ctx.beginPath();
+            let midIndex = Math.floor(this.tail.length / 2);
+            ctx.moveTo(this.tail[midIndex].x, this.tail[midIndex].y);
+            ctx.lineTo(this.tail[midIndex].x + (Math.random()-0.5)*35, this.tail[midIndex].y + (Math.random()-0.5)*35);
+            ctx.stroke();
+          }
+        }
+        
+        // Kepala/inti petir
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      }
+      isOffScreen() {
+        return (this.x < -100 || this.x > LOGICAL_WIDTH + 100 || this.y < -100 || this.y > LOGICAL_HEIGHT + 100);
+      }
+    }
+
+    // 2.5. ENEMY PROJECTILE
+    class EnemyProjectile {
+      constructor(x, y, angle) {
+        this.x = x;
+        this.y = y;
+        this.radius = 8;
+        let speed = 4;
+        this.dx = Math.cos(angle) * speed;
+        this.dy = Math.sin(angle) * speed;
+        this.color = '#ef4444'; // Red
+      }
+
+      update(deltaTime) {
+        let timeScale = deltaTime / 9.0;
+        this.x += this.dx * timeScale;
+        this.y += this.dy * timeScale;
+      }
+
+      draw(ctx) {
+        ctx.save();
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      isOffScreen() {
+        return (
+          this.x < -this.radius ||
+          this.x > LOGICAL_WIDTH + this.radius ||
+          this.y < -this.radius ||
+          this.y > LOGICAL_HEIGHT + this.radius
+        );
+      }
+    }
+
     // 3. ENEMY (Sewer Rat)
     class Enemy {
       constructor(x, y, playerSpeed = 2) {
         this.x = x;
         this.y = y;
         this.size = 24;
-        this.speed = playerSpeed * 0.5;
+        this.speed = playerSpeed * 0.45; // Kecepatan tikus 0.45x kucing
         this.color = '#6b7280'; // Gray
         this.health = 1;
       }
 
-      update(playerX, playerY, playerSpeed) {
-        this.speed = playerSpeed * 0.5;
+      update(playerX, playerY, playerSpeed, deltaTime) {
+        this.speed = playerSpeed * 0.45;
+        let timeScale = deltaTime / 9.0;
         let angle = Math.atan2(playerY - this.y, playerX - this.x);
-        this.x += Math.cos(angle) * this.speed;
-        this.y += Math.sin(angle) * this.speed;
+        this.x += Math.cos(angle) * this.speed * timeScale;
+        this.y += Math.sin(angle) * this.speed * timeScale;
       }
 
       draw(ctx) {
@@ -812,44 +1224,135 @@
         ctx.beginPath();
         ctx.arc(-4, -1, 1.5, 0, Math.PI*2);
         ctx.arc(4, -1, 1.5, 0, Math.PI*2);
-        ctx.fill();
+        ctx.restore();
+      }
+    }
 
+    // 3.5. BOSS ENEMY
+    class BossEnemy extends Enemy {
+      constructor(x, y, playerSpeed = 2, bossNumber = 1) {
+        super(x, y, playerSpeed);
+        this.size = 64 + (bossNumber * 8); // Gets bigger
+        this.speed = playerSpeed * 0.60; // Boss tikus 0.60x kucing
+        this.color = '#7f1d1d'; // Dark red
+        this.health = 60 * bossNumber; // Scales with time
+        this.maxHealth = this.health;
+        this.shootTimer = 0;
+        this.shootInterval = 1500; // Kecepatan tembakan boss konstan
+      }
+
+      update(playerX, playerY, playerSpeed, deltaTime) {
+        super.update(playerX, playerY, playerSpeed, deltaTime);
+        this.shootTimer += deltaTime;
+        if (this.shootTimer >= this.shootInterval) {
+          this.shootTimer = 0;
+          let angle = Math.atan2(playerY - this.y, playerX - this.x);
+          enemyProjectiles.push(new EnemyProjectile(this.x, this.y, angle));
+        }
+      }
+
+      draw(ctx) {
+        super.draw(ctx);
+        // Draw boss health bar
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(-this.size/2, -this.size/2 - 15, this.size, 6);
+        ctx.fillStyle = '#ef4444';
+        let hpPct = Math.max(0, this.health / this.maxHealth);
+        ctx.fillRect(-this.size/2, -this.size/2 - 15, this.size * hpPct, 6);
+        ctx.restore();
+        ctx.restore();
+      }
+    }
+
+    // 3.8. MINI BOSS ENEMY
+    class MiniBossEnemy extends Enemy {
+      constructor(x, y, playerSpeed = 2, level = 1) {
+        super(x, y, playerSpeed);
+        this.size = 50 + (level * 4); // Sedikit lebih besar
+        this.speed = playerSpeed * 0.50; // Lebih lambat dari musuh biasa, tapi lebih cepat dari boss
+        this.color = '#991b1b'; // Merah gelap
+        this.health = 20 * level; 
+        this.maxHealth = this.health;
+      }
+      draw(ctx) {
+        super.draw(ctx);
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(-this.size/2, -this.size/2 - 10, this.size, 4);
+        ctx.fillStyle = '#f59e0b'; // Amber health bar for mini boss
+        let hpPct = Math.max(0, this.health / this.maxHealth);
+        ctx.fillRect(-this.size/2, -this.size/2 - 10, this.size * hpPct, 4);
         ctx.restore();
       }
     }
 
     // 4. CATNIP (XP Pickup)
     class Catnip {
-      constructor(x, y) {
+      constructor(x, y, value = 1) {
         this.x = x;
         this.y = y;
         this.radius = 6;
         this.color = '#10b981'; // Green
         this.pulse = Math.random() * Math.PI;
+        this.life = 20000; // 20 detik sebelum hilang
+        this.value = value;
       }
 
       update(playerX, playerY, deltaTime) {
         this.pulse += deltaTime * 0.005;
+        this.life -= deltaTime;
 
         // Magnet attraction effect when player is close
         let dist = Math.hypot(playerX - this.x, playerY - this.y);
         if (dist < 120) {
+          let timeScale = deltaTime / 9.0;
           let speed = 6 * (1 - dist / 120) + 1;
           let angle = Math.atan2(playerY - this.y, playerX - this.x);
-          this.x += Math.cos(angle) * speed;
-          this.y += Math.sin(angle) * speed;
+          this.x += Math.cos(angle) * speed * timeScale;
+          this.y += Math.sin(angle) * speed * timeScale;
         }
       }
 
       draw(ctx) {
         ctx.save();
+        ctx.translate(this.x, this.y);
         let scale = 1 + Math.sin(this.pulse) * 0.2;
+        ctx.scale(scale, scale);
+        
         ctx.shadowBlur = 8;
-        ctx.shadowColor = this.color;
-        ctx.fillStyle = this.color;
+        ctx.shadowColor = '#facc15';
+        
+        // Main Cheese Body
+        ctx.fillStyle = '#fde047'; // Bright yellow
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * scale, 0, Math.PI * 2);
+        ctx.moveTo(-7, -8);
+        ctx.lineTo(9, 2);
+        ctx.lineTo(-5, 9);
+        ctx.quadraticCurveTo(-10, 0, -7, -8); // Curved crust
         ctx.fill();
+
+        // Crust line
+        ctx.strokeStyle = '#eab308';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Cheese Holes
+        ctx.fillStyle = '#ca8a04';
+        ctx.beginPath();
+        ctx.arc(-2, -2, 2, 0, Math.PI*2);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.arc(-1, 5, 1.5, 0, Math.PI*2);
+        ctx.fill();
+        
+        ctx.beginPath();
+        ctx.arc(4, 0, 1.2, 0, Math.PI*2);
+        ctx.fill();
+        
         ctx.restore();
       }
     }
@@ -869,10 +1372,11 @@
         this.decay = 0.02 + Math.random() * 0.03;
       }
 
-      update() {
-        this.x += this.dx;
-        this.y += this.dy;
-        this.life -= this.decay;
+      update(deltaTime) {
+        let timeScale = deltaTime / 9.0;
+        this.x += this.dx * timeScale;
+        this.y += this.dy * timeScale;
+        this.life -= this.decay * timeScale;
       }
 
       draw(ctx) {
@@ -898,9 +1402,10 @@
         this.speedY = -0.8;
       }
 
-      update() {
-        this.y += this.speedY;
-        this.life -= 0.02;
+      update(deltaTime) {
+        let timeScale = deltaTime / 9.0;
+        this.y += this.speedY * timeScale;
+        this.life -= 0.02 * timeScale;
       }
 
       draw(ctx) {
@@ -915,37 +1420,195 @@
     }
 
 
+    // 7. BOOMERANG (Orbit Weapon)
+    class Boomerang {
+      constructor(index, total) {
+        this.index = index;
+        this.total = total;
+        this.angle = (Math.PI * 2 / total) * index;
+        this.distance = 110; // Jarak orbit diperlebar
+        this.radius = 15; // Ukuran hitbox diperbesar
+        this.color = '#8b5cf6'; // Purple
+        this.speedMulti = 2 + (player.skills.boomerang * 0.5); // Kecepatan ditambah 2x dan meningkat sesuai level
+      }
+      update(deltaTime) {
+        this.angle += deltaTime * 0.003 * this.speedMulti;
+        this.x = player.x + Math.cos(this.angle) * this.distance;
+        this.y = player.y + Math.sin(this.angle) * this.distance;
+      }
+      draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle * 5);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.moveTo(15, 0);
+        ctx.lineTo(-8, 8);
+        ctx.lineTo(-3, 0);
+        ctx.lineTo(-8, -8);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // 8. AURA RING
+    class AuraRing {
+      constructor(x, y, level) {
+        this.x = x;
+        this.y = y;
+        this.radius = 20;
+        this.maxRadius = 100 + (level * 20); // Makin besar tiap level
+        this.life = 1.0;
+        this.color = '#10b981';
+        this.damage = 1;
+        this.hitTargets = new Set();
+      }
+      update(deltaTime) {
+        this.radius += deltaTime * 0.2;
+        this.life -= deltaTime * 0.002;
+      }
+      draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.life);
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 4;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
     // --- GAME ENGINE STATE & LOOP ---
 
     let player;
     let enemies = [];
     let projectiles = [];
+    let enemyProjectiles = [];
+    let lightningProjectiles = [];
+    let lightningRays = [];
+    let auras = [];
     let catnips = [];
+    let healthDrops = [];
     let particles = [];
     let floatingTexts = [];
+    let auraRings = [];
+    let boomerangs = [];
 
     let isPlaying = false;
+    let isLevelUpPaused = false;
     let timeElapsed = 0; // seconds
     let enemySpawnTimer = 0;
     let enemySpawnInterval = 1500; // in milliseconds
-    let auraDamageTimer = 0;
-    let auraDamageInterval = 300; // Deal area damage every 300ms
 
     let killCount = 0;
     let lastTime = 0;
+
+    // Boss Mechanics
+    let bossActive = false;
+    let bossDefeatedCount = 0;
+    let nextBossTime = 60; // 60 seconds
+    let nextMiniBossTime = 30; // 30 seconds
+    let bossWarningTimer = 0;
+
+    const bgThemes = [
+      // Level 1: Night / City
+      { skyTop: '#0f172a', skyBottom: '#1e293b', ground: '#0b0f19', line: '#1e293b', sun: '#3b82f6', isNight: true },
+      // Level 2: Sunset / Hell
+      { skyTop: '#450a0a', skyBottom: '#7f1d1d', ground: '#271c19', line: '#4a2511', sun: '#f97316', isNight: false },
+      // Level 3: Dark Forest
+      { skyTop: '#064e3b', skyBottom: '#047857', ground: '#022c22', line: '#154f2c', sun: '#10b981', isNight: false },
+      // Level 4: Purple Void
+      { skyTop: '#3b0764', skyBottom: '#581c87', ground: '#1f1035', line: '#3b1c61', sun: '#c084fc', isNight: true },
+      // Level 5: Golden Desert
+      { skyTop: '#78350f', skyBottom: '#92400e', ground: '#422006', line: '#623512', sun: '#fcd34d', isNight: false }
+    ];
+
+    const allSkills = [
+      { id: 'multiShot', icon: '🔫', title: 'Tambah Tembakan', desc: 'Menambah jumlah benang yang ditembakkan bersamaan.' },
+      { id: 'piercing', icon: '🏹', title: 'Peluru Tembus', desc: 'Benang tidak hancur saat menabrak musuh pertama.' },
+      { id: 'aura', icon: '🛜', title: 'Gelombang Aura', desc: 'Aura yang melukai musuh di sekitar setiap 2 detik.' },
+      { id: 'bounce', icon: '🪀', title: 'Peluru Pantul', desc: 'Benang memantul ketika mengenai batas layar.' },
+      { id: 'boomerang', icon: '🌀', title: 'Boomerang Orbit', desc: 'Senjata yang terus berputar mengelilingi kucing.' },
+      { id: 'lightning', icon: '⚡', title: 'Tembakan Listrik', desc: 'Benang menyetrum dan menyambar ke tikus di sekitarnya.' }
+    ];
+
+    function triggerLevelUp() {
+      isLevelUpPaused = true;
+      document.getElementById('levelup-screen').style.display = 'flex';
+      
+      let shuffled = [...allSkills].sort(() => 0.5 - Math.random());
+      let choices = shuffled.slice(0, 3);
+      
+      const container = document.getElementById('skill-choices');
+      container.innerHTML = '';
+      
+      choices.forEach(skill => {
+        let card = document.createElement('div');
+        card.className = 'skill-card';
+        card.onclick = () => selectSkill(skill.id);
+        
+        let currentLevel = player.skills[skill.id];
+        
+        card.innerHTML = `
+          <div class="skill-icon">${skill.icon}</div>
+          <div class="skill-title">${skill.title}</div>
+          <div class="skill-desc">${skill.desc}</div>
+          <div class="skill-level">Lv. ${currentLevel} ➔ Lv. ${currentLevel + 1}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function selectSkill(skillId) {
+      player.skills[skillId]++;
+      
+      if (skillId === 'boomerang') {
+        let count = player.skills.boomerang + 1; // Start with 2
+        boomerangs = [];
+        for (let i = 0; i < count; i++) {
+          boomerangs.push(new Boomerang(i, count));
+        }
+      }
+      
+      document.getElementById('levelup-screen').style.display = 'none';
+      isLevelUpPaused = false;
+      lastTime = performance.now();
+      requestAnimationFrame(gameLoop);
+    }
 
     function resetGame() {
       player = new Player(LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
       enemies = [];
       projectiles = [];
+      enemyProjectiles = [];
+      lightningProjectiles = [];
+      lightningRays = [];
+      auras = [];
       catnips = [];
+      healthDrops = [];
       particles = [];
       floatingTexts = [];
+      auraRings = [];
+      boomerangs = [];
       timeElapsed = 0;
       enemySpawnTimer = 0;
       enemySpawnInterval = 1500;
-      auraDamageTimer = 0;
       killCount = 0;
+      bossActive = false;
+      bossDefeatedCount = 0;
+      nextBossTime = 60;
+      nextMiniBossTime = 30;
+      bossWarningTimer = 0;
+      isPaused = false;
+      isLevelUpPaused = false;
+      pauseToggle.textContent = '⏸️';
       lastTime = performance.now();
 
       if (window.parent) {
@@ -954,7 +1617,12 @@
     }
 
     function spawnEnemy() {
-      let count = 1 + Math.floor(timeElapsed / 7);
+      // Base count dikurangi 20% lagi dari sebelumnya (0.8 * 0.8 = 0.64)
+      // Tambahan: Kurangi 20% lagi untuk setiap boss yang telah dikalahkan
+      let baseCount = 1 + Math.floor(timeElapsed / 9);
+      let bossReduction = Math.pow(0.8, bossDefeatedCount);
+      let count = Math.max(1, Math.floor(baseCount * 0.64 * bossReduction));
+      
       for (let i = 0; i < count; i++) {
         // Spawn at random border outside the canvas
         let side = Math.floor(Math.random() * 4);
@@ -979,73 +1647,155 @@
       }
     }
 
+    function handleEnemyDeath(e, eIndex) {
+      if (e instanceof BossEnemy) {
+        bossActive = false;
+        bossDefeatedCount++;
+        nextBossTime = Math.max(timeElapsed + 5, (bossDefeatedCount + 1) * 60); // Muncul tiap kelipatan 60 detik (minimal 5 detik istirahat)
+        for(let c = 0; c < 15; c++) {
+          catnips.push(new Catnip(e.x + (Math.random()-0.5)*100, e.y + (Math.random()-0.5)*100));
+        }
+        floatingTexts.push(new FloatingText("BOSS DEFEATED!", LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2 - 50, '#10b981', 36));
+      } else if (e instanceof MiniBossEnemy) {
+        for(let c = 0; c < 5; c++) {
+          catnips.push(new Catnip(e.x + (Math.random()-0.5)*40, e.y + (Math.random()-0.5)*40));
+        }
+        healthDrops.push(new HealthDrop(e.x, e.y));
+        floatingTexts.push(new FloatingText("MINI BOSS DEFEATED!", e.x, e.y - 30, '#f59e0b', 20));
+      } else {
+        catnips.push(new Catnip(e.x, e.y));
+        if (Math.random() < 0.0125) { // 1/4 dari 0.05
+          healthDrops.push(new HealthDrop(e.x + 10, e.y + 10));
+        }
+      }
+      enemies.splice(eIndex, 1);
+      killCount++;
+      if (window.parent) {
+        window.parent.postMessage({ type: 'GAME_KILL', kills: killCount }, '*');
+      }
+    }
+
     function checkCollisions(deltaTime) {
       // 1. Yarn Ball vs Enemy
       for (let pIndex = projectiles.length - 1; pIndex >= 0; pIndex--) {
         let p = projectiles[pIndex];
+        let hitSomething = false;
+        
         for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
           let e = enemies[eIndex];
           let dist = Math.hypot(p.x - e.x, p.y - e.y);
 
-          if (dist < p.radius + e.size / 2) {
-            // Collision!
+          if (dist < p.radius + e.size / 2 && !p.hitTargets.has(e)) {
+            p.hitTargets.add(e);
             e.health -= p.damage;
-            projectiles.splice(pIndex, 1);
+            hitSomething = true;
             sound.playHit();
 
-            // Spawn floating damage & hit particles
             floatingTexts.push(new FloatingText("1", e.x, e.y - 15, '#ffb86b', 14));
-            for(let i=0; i<6; i++) {
-              particles.push(new Particle(e.x, e.y, '#f43f5e'));
-            }
+            for(let i=0; i<6; i++) particles.push(new Particle(e.x, e.y, '#f43f5e'));
 
             if (e.health <= 0) {
-              // Spawn Catnip XP point
-              catnips.push(new Catnip(e.x, e.y));
-              enemies.splice(eIndex, 1);
-              killCount++;
-              if (window.parent) {
-                window.parent.postMessage({ type: 'GAME_KILL', kills: killCount }, '*');
+              handleEnemyDeath(e, enemies.indexOf(e)); 
+            }
+            
+            p.pierceHit++;
+            
+            // Logic Memantul ke Tikus Lain
+            if (p.bounceCount < p.maxBounce) {
+              p.bounceCount++;
+              let nearest = null;
+              let minDist = Infinity;
+              for (let other of enemies) {
+                if (other === e || p.hitTargets.has(other) || other.health <= 0) continue;
+                let d = Math.hypot(other.x - p.x, other.y - p.y);
+                if (d < minDist) { minDist = d; nearest = other; }
+              }
+              if (nearest) {
+                 let angle = Math.atan2(nearest.y - p.y, nearest.x - p.x);
+                 let speed = Math.hypot(p.dx, p.dy);
+                 p.dx = Math.cos(angle) * speed;
+                 p.dy = Math.sin(angle) * speed;
+              } else {
+                 if (p.pierceHit > p.maxPierce) projectiles.splice(pIndex, 1);
+              }
+            } else {
+              if (p.pierceHit > p.maxPierce) {
+                projectiles.splice(pIndex, 1);
               }
             }
+            break; 
+          }
+        }
+      }
+
+      // 1.8 Boomerang vs Enemy
+      for (let b of boomerangs) {
+        for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
+          let e = enemies[eIndex];
+          let dist = Math.hypot(b.x - e.x, b.y - e.y);
+          if (dist < b.radius + e.size / 2) {
+            if (!e.lastHitByBoomerang || performance.now() - e.lastHitByBoomerang > 300) {
+              e.lastHitByBoomerang = performance.now();
+              // Damage mematikan untuk tikus biasa (karena max hp tikus 1)
+              let damage = 2; 
+              e.health -= damage;
+              floatingTexts.push(new FloatingText("2", e.x, e.y - 15, '#8b5cf6', 14));
+              for(let k=0; k<5; k++) particles.push(new Particle(e.x, e.y, '#8b5cf6'));
+              if (e.health <= 0) {
+                 handleEnemyDeath(e, eIndex);
+              }
+            }
+          }
+        }
+      }
+
+      // 1.2 Lightning Projectile vs Enemy
+      for (let lIndex = lightningProjectiles.length - 1; lIndex >= 0; lIndex--) {
+        let lp = lightningProjectiles[lIndex];
+        for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
+          let e = enemies[eIndex];
+          let dist = Math.hypot(lp.x - e.x, lp.y - e.y);
+          if (dist < lp.radius + e.size / 2) {
+            e.health -= lp.damage;
+            lightningProjectiles.splice(lIndex, 1);
+            sound.playHit();
+            
+            // Menyebar ke target lain (Chain Lightning)
+            let hits = player.skills.lightning; // +1 target per level
+            let chainTargets = enemies.filter(other => other !== e && other.health > 0 && Math.hypot(other.x - e.x, other.y - e.y) < 300);
+            chainTargets.sort((a, b) => Math.hypot(a.x - e.x, a.y - e.y) - Math.hypot(b.x - e.x, b.y - e.y));
+            
+            for (let i = 0; i < Math.min(hits, chainTargets.length); i++) {
+              let target = chainTargets[i];
+              target.health -= lp.damage;
+              lightningRays.push({ x1: e.x, y1: e.y, x2: target.x, y2: target.y, life: 1.0 });
+              for(let k=0; k<4; k++) particles.push(new Particle(target.x, target.y, '#3b82f6'));
+              if (target.health <= 0) handleEnemyDeath(target, enemies.indexOf(target));
+            }
+
+            floatingTexts.push(new FloatingText("1", e.x, e.y - 15, '#60a5fa', 14));
+            for(let k=0; k<4; k++) particles.push(new Particle(e.x, e.y, '#3b82f6'));
+            if (e.health <= 0) handleEnemyDeath(e, enemies.indexOf(e));
             break;
           }
         }
       }
 
-      // 2. Aura damage vs Enemy
-      auraDamageTimer += deltaTime;
-      let dealAuraDamage = false;
-      if (auraDamageTimer >= auraDamageInterval) {
-        auraDamageTimer = 0;
-        dealAuraDamage = true;
+      // 1.5 Enemy Projectile vs Player
+      for (let epIndex = enemyProjectiles.length - 1; epIndex >= 0; epIndex--) {
+        let ep = enemyProjectiles[epIndex];
+        let dist = Math.hypot(player.x - ep.x, player.y - ep.y);
+        if (dist < player.size / 2 + ep.radius) {
+          player.takeDamage();
+          enemyProjectiles.splice(epIndex, 1);
+        }
       }
 
+      // 2. Enemy vs Player (Aura damage removed)
       for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
         let e = enemies[eIndex];
         let dist = Math.hypot(player.x - e.x, player.y - e.y);
 
-        // Check if enemy inside Aura radius
-        if (dist < player.auraRadius + e.size / 2) {
-          if (dealAuraDamage) {
-            e.health -= 1; // Aura damage
-            floatingTexts.push(new FloatingText("AURA", e.x, e.y - 15, '#10b981', 12));
-            for(let i=0; i<3; i++) {
-              particles.push(new Particle(e.x, e.y, '#10b981'));
-            }
-            if (e.health <= 0) {
-              catnips.push(new Catnip(e.x, e.y));
-              enemies.splice(eIndex, 1);
-              killCount++;
-              if (window.parent) {
-                window.parent.postMessage({ type: 'GAME_KILL', kills: killCount }, '*');
-              }
-              continue;
-            }
-          }
-        }
-
-        // 3. Enemy vs Player
         if (dist < player.size / 2 + e.size / 2) {
           player.takeDamage();
         }
@@ -1057,8 +1807,20 @@
         let dist = Math.hypot(player.x - c.x, player.y - c.y);
         if (dist < player.size / 2 + c.radius) {
           // Collect
-          player.addXp(1);
+          player.addXp(c.value || 1);
           catnips.splice(cIndex, 1);
+        }
+      }
+
+      // 4.5 Health Drop vs Player
+      for (let hIndex = healthDrops.length - 1; hIndex >= 0; hIndex--) {
+        let h = healthDrops[hIndex];
+        let dist = Math.hypot(player.x - h.x, player.y - h.y);
+        if (dist < player.size / 2 + h.radius) {
+          player.health = Math.min(player.maxHealth, player.health + 1);
+          floatingTexts.push(new FloatingText("+1 HP", player.x, player.y - 20, '#10b981', 20));
+          healthDrops.splice(hIndex, 1);
+          sound.playHit(); 
         }
       }
     }
@@ -1084,28 +1846,32 @@
       ctx.save();
       // Draw background bar for HUD text
       ctx.fillStyle = 'rgba(11, 15, 25, 0.6)';
-      ctx.fillRect(0, 12, LOGICAL_WIDTH, 50);
+      ctx.fillRect(0, 12, LOGICAL_WIDTH, 80);
+
+      let isMobile = LOGICAL_WIDTH < 500;
+      let fontSize = isMobile ? 18 : 22;
 
       // Lives Heart icon
       ctx.fillStyle = '#ef4444';
-      ctx.font = "24px 'Outfit', sans-serif";
+      ctx.font = `bold ${fontSize}px 'Outfit', sans-serif`;
       ctx.textAlign = 'left';
-      ctx.fillText("❤️ " + player.health, 30, 46);
+      ctx.fillText("❤️ " + player.health, 15, 44);
 
       // Level Indicator
       ctx.fillStyle = '#ffb86b';
-      ctx.font = "bold 20px 'Outfit', sans-serif";
+      ctx.font = `bold ${fontSize}px 'Outfit', sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText(`LV. ${player.level}`, LOGICAL_WIDTH / 2 - 100, 45);
+      ctx.fillText(`LV. ${player.level}`, LOGICAL_WIDTH / 2 - (isMobile ? 15 : 0), 44);
 
-      // Timer (formatted mm:ss)
+      // Time Elapsed
       let mins = Math.floor(timeElapsed / 60);
       let secs = Math.floor(timeElapsed % 60);
-      let timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-      ctx.fillStyle = '#f3f4f6';
-      ctx.font = "bold 22px 'Outfit', sans-serif";
-      ctx.fillText(`⏱️ ${timeStr}`, LOGICAL_WIDTH / 2 + 100, 45);
-
+      let timeStr = (mins < 10 ? "0" + mins : mins) + ":" + (secs < 10 ? "0" + secs : secs);
+      ctx.fillStyle = '#9ca3af';
+      ctx.textAlign = 'center';
+      // Moved from right edge to center bottom of the HUD bar
+      ctx.fillText("Waktu: " + timeStr, LOGICAL_WIDTH / 2, 80);
+      
       ctx.restore();
     }
 
@@ -1113,18 +1879,74 @@
     function gameLoop(timestamp) {
       if (!isPlaying) return;
 
+      if (isPaused || isLevelUpPaused) {
+        if (isPaused) {
+          // Render pause screen overlay
+          ctx.fillStyle = 'rgba(0,0,0,0.6)';
+          ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+          ctx.fillStyle = '#fff';
+          ctx.font = "bold 60px 'Outfit', sans-serif";
+          ctx.textAlign = 'center';
+          ctx.fillText("PAUSED", LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
+        } else if (isLevelUpPaused) {
+          ctx.fillStyle = 'rgba(0,0,0,0.4)';
+          ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+          ctx.fillStyle = '#fff';
+          ctx.font = "bold 60px 'Outfit', sans-serif";
+          ctx.textAlign = 'center';
+          ctx.fillText("CHOOSE SKILL", LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2);
+        }
+        
+        lastTime = timestamp; // prevent delta jump
+        requestAnimationFrame(gameLoop);
+        return;
+      }
+
       let deltaTime = timestamp - lastTime;
       // Cap deltaTime to avoid massive jumps during lag spikes
       if (deltaTime > 100) deltaTime = 16.67; 
       lastTime = timestamp;
 
       // Update game stats
-      timeElapsed += deltaTime / 1000;
+      if (!bossActive) {
+        timeElapsed += deltaTime / 1000;
+      }
+
+      // Boss Logic Check
+      if (timeElapsed >= nextBossTime && !bossActive && bossWarningTimer <= 0) {
+        // Trigger Boss Warning
+        bossWarningTimer = 3; // 3 seconds warning
+        enemies = []; // Clear small rats
+        sound.playPlayerHurt(); // Warning sound
+      }
+
+      // Mini Boss Logic Check
+      if (timeElapsed >= nextMiniBossTime && !bossActive) {
+        nextMiniBossTime += 30;
+        if (bossWarningTimer <= 0) {
+           let side = Math.floor(Math.random() * 4);
+           let x, y;
+           if (side === 0) { x = Math.random() * LOGICAL_WIDTH; y = -50; }
+           else if (side === 1) { x = LOGICAL_WIDTH + 50; y = Math.random() * LOGICAL_HEIGHT; }
+           else if (side === 2) { x = Math.random() * LOGICAL_WIDTH; y = LOGICAL_HEIGHT + 50; }
+           else { x = -50; y = Math.random() * LOGICAL_HEIGHT; }
+           enemies.push(new MiniBossEnemy(x, y, player.speed, Math.max(1, Math.floor(timeElapsed / 30))));
+        }
+      }
+
+      if (bossWarningTimer > 0) {
+        bossWarningTimer -= deltaTime / 1000;
+        if (bossWarningTimer <= 0) {
+          // Spawn Boss
+          bossActive = true;
+          enemies.push(new BossEnemy(LOGICAL_WIDTH / 2, -100, player.speed, bossDefeatedCount + 1));
+        }
+      }
 
       // Enemy spawn timer scaling: get faster as time passes
       enemySpawnInterval = Math.max(500, 1500 - (timeElapsed * 5));
       enemySpawnTimer += deltaTime;
-      if (enemySpawnTimer >= enemySpawnInterval) {
+      if (enemySpawnTimer >= enemySpawnInterval && !bossActive && bossWarningTimer <= 0) {
         enemySpawnTimer = 0;
         spawnEnemy();
       }
@@ -1134,34 +1956,128 @@
 
       // Update projectiles
       for (let i = projectiles.length - 1; i >= 0; i--) {
-        projectiles[i].update();
-        if (projectiles[i].isOffScreen()) {
+        let p = projectiles[i];
+        p.update(deltaTime);
+        if (p.isOffScreen()) {
           projectiles.splice(i, 1);
         }
       }
-
-      // Update enemies
-      for (let enemy of enemies) {
-        enemy.update(player.x, player.y, player.speed);
+      
+      // Update Lightning Projectiles
+      for (let i = lightningProjectiles.length - 1; i >= 0; i--) {
+        let lp = lightningProjectiles[i];
+        lp.update(deltaTime);
+        if (lp.isOffScreen()) lightningProjectiles.splice(i, 1);
       }
 
-      // Update Catnip
-      for (let catnip of catnips) {
+      // Update Boomerangs
+      for (let b of boomerangs) {
+        b.update(deltaTime);
+      }
+
+      // Update Auras
+      for (let i = auras.length - 1; i >= 0; i--) {
+        let a = auras[i];
+        a.update(deltaTime);
+        
+        // Aura vs Enemy
+        for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
+          let e = enemies[eIndex];
+          let dist = Math.hypot(a.x - e.x, a.y - e.y);
+          if (dist < a.radius + e.size/2 && !a.hitTargets.has(e)) {
+            a.hitTargets.add(e);
+            e.health -= a.damage;
+            sound.playHit();
+            floatingTexts.push(new FloatingText("1", e.x, e.y - 15, '#10b981', 14));
+            for(let k=0; k<3; k++) particles.push(new Particle(e.x, e.y, '#10b981'));
+            if (e.health <= 0) handleEnemyDeath(e, eIndex);
+          }
+        }
+        
+        if (a.life <= 0) auras.splice(i, 1);
+      }
+
+      // Update Aura Rings
+      for (let i = auraRings.length - 1; i >= 0; i--) {
+        let ring = auraRings[i];
+        ring.radius += deltaTime * 0.2;
+        ring.life -= deltaTime * 0.001;
+        
+        // Damage enemies
+        for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
+          let e = enemies[eIndex];
+          if (!e.hitByAura) e.hitByAura = new Set();
+          if (!e.hitByAura.has(ring)) {
+            let dist = Math.hypot(ring.x - e.x, ring.y - e.y);
+            if (Math.abs(dist - ring.radius) < e.size / 2 + 10) {
+              e.hitByAura.add(ring);
+              e.health -= ring.damage;
+              floatingTexts.push(new FloatingText("AURA", e.x, e.y - 15, '#10b981', 12));
+              for(let k=0; k<3; k++) particles.push(new Particle(e.x, e.y, '#10b981'));
+              if (e.health <= 0) {
+                handleEnemyDeath(e, eIndex);
+              }
+            }
+          }
+        }
+
+        if (ring.life <= 0) {
+          auraRings.splice(i, 1);
+        }
+      }
+
+      // Update Enemies
+      for (let enemy of enemies) {
+        enemy.update(player.x, player.y, player.speed, deltaTime);
+      }
+
+      // Update Enemy Projectiles
+      for (let i = enemyProjectiles.length - 1; i >= 0; i--) {
+        let ep = enemyProjectiles[i];
+        ep.update(deltaTime);
+        if (ep.isOffScreen()) enemyProjectiles.splice(i, 1);
+      }
+
+      // Update Catnips
+      for (let i = catnips.length - 1; i >= 0; i--) {
+        let catnip = catnips[i];
         catnip.update(player.x, player.y, deltaTime);
+        if (catnip.life <= 0) catnips.splice(i, 1);
+      }
+      // Update Health Drops
+      for (let i = healthDrops.length - 1; i >= 0; i--) {
+        let h = healthDrops[i];
+        h.update(player.x, player.y, deltaTime);
+        if (h.life <= 0) healthDrops.splice(i, 1);
+      }
+
+      // Hard cap optimization: keseluruhan item (XP + P3K) maksimal 15 di layar
+      while (catnips.length + healthDrops.length > 15) {
+        if (catnips.length > 0) {
+          let removed = catnips.shift();
+          if (catnips.length > 0) {
+            catnips[0].value = (catnips[0].value || 1) + (removed.value || 1);
+            catnips[0].radius = Math.min(15, catnips[0].radius + 1); // Membesar jika digabungkan
+          }
+        } else if (healthDrops.length > 0) {
+          healthDrops.shift();
+        }
       }
 
       // Update particles
       for (let i = particles.length - 1; i >= 0; i--) {
-        particles[i].update();
-        if (particles[i].life <= 0) {
+        let particle = particles[i];
+        particle.update(deltaTime);
+        if (particle.life <= 0) {
           particles.splice(i, 1);
         }
       }
 
       // Update floating texts
       for (let i = floatingTexts.length - 1; i >= 0; i--) {
-        floatingTexts[i].update();
-        if (floatingTexts[i].life <= 0) {
+        let ft = floatingTexts[i];
+        ft.update(deltaTime);
+        if (ft.life <= 0) {
           floatingTexts.splice(i, 1);
         }
       }
@@ -1176,10 +2092,42 @@
       }
 
       // 2. RENDER PHASE
-      ctx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+      let theme = bgThemes[Math.min(bossDefeatedCount, bgThemes.length - 1)];
+      
+      // Draw Sky Gradient
+      let bgGradient = ctx.createLinearGradient(0, 0, 0, LOGICAL_HEIGHT);
+      bgGradient.addColorStop(0, theme.skyTop);
+      bgGradient.addColorStop(0.6, theme.skyBottom);
+      bgGradient.addColorStop(1, theme.ground);
+      ctx.fillStyle = bgGradient;
+      ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+
+      // Draw Celestial Body (Sun/Moon)
+      ctx.fillStyle = theme.sun;
+      ctx.beginPath();
+      ctx.arc(LOGICAL_WIDTH * 0.8, LOGICAL_HEIGHT * 0.3, 60, 0, Math.PI * 2);
+      ctx.fill();
+      if (theme.isNight) {
+        ctx.fillStyle = theme.skyTop;
+        ctx.beginPath();
+        ctx.arc(LOGICAL_WIDTH * 0.8 - 20, LOGICAL_HEIGHT * 0.3 - 15, 50, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Draw Distant Mountains/Terrain
+      ctx.fillStyle = theme.skyTop;
+      ctx.beginPath();
+      ctx.moveTo(0, LOGICAL_HEIGHT * 0.65);
+      ctx.lineTo(LOGICAL_WIDTH * 0.25, LOGICAL_HEIGHT * 0.4);
+      ctx.lineTo(LOGICAL_WIDTH * 0.55, LOGICAL_HEIGHT * 0.75);
+      ctx.lineTo(LOGICAL_WIDTH * 0.8, LOGICAL_HEIGHT * 0.45);
+      ctx.lineTo(LOGICAL_WIDTH, LOGICAL_HEIGHT * 0.6);
+      ctx.lineTo(LOGICAL_WIDTH, LOGICAL_HEIGHT);
+      ctx.lineTo(0, LOGICAL_HEIGHT);
+      ctx.fill();
 
       // Draw floor grid pattern for gaming aesthetic
-      ctx.strokeStyle = '#1e293b';
+      ctx.strokeStyle = theme.line;
       ctx.lineWidth = 1;
       const gridSize = 50;
       for (let x = 0; x < LOGICAL_WIDTH; x += gridSize) {
@@ -1197,13 +2145,77 @@
 
       // Draw entities
       for (let catnip of catnips) catnip.draw(ctx);
+      for (let h of healthDrops) h.draw(ctx);
+      for (let proj of projectiles) proj.draw(ctx);
+      for (let lp of lightningProjectiles) lp.draw(ctx);
+      for (let a of auras) a.draw(ctx);
+      for (let ep of enemyProjectiles) ep.draw(ctx);
       for (let enemy of enemies) enemy.draw(ctx);
-      for (let p of projectiles) p.draw(ctx);
       for (let particle of particles) particle.draw(ctx);
       
+      // Draw Lightning Rays (sisa transisi jika masih ada)
+      for (let i = lightningRays.length - 1; i >= 0; i--) {
+        let ray = lightningRays[i];
+        ray.life -= deltaTime * 0.005;
+        if (ray.life <= 0) {
+          lightningRays.splice(i, 1);
+        } else {
+          ctx.save();
+          ctx.globalAlpha = ray.life;
+          ctx.strokeStyle = '#60a5fa'; // Light blue
+          ctx.lineWidth = 2;
+          ctx.shadowBlur = 10;
+          ctx.shadowColor = '#3b82f6';
+          
+          ctx.beginPath();
+          ctx.moveTo(ray.x1, ray.y1);
+          let cx = (ray.x1 + ray.x2) / 2 + (Math.random() - 0.5) * 20;
+          let cy = (ray.y1 + ray.y2) / 2 + (Math.random() - 0.5) * 20;
+          ctx.lineTo(cx, cy);
+          ctx.lineTo(ray.x2, ray.y2);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
+
+      // Draw Aura Rings
+      for (let ring of auraRings) {
+        ctx.save();
+        ctx.globalAlpha = ring.life;
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(ring.x, ring.y, ring.radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      for (let b of boomerangs) b.draw(ctx);
+
       player.draw(ctx);
 
       for (let text of floatingTexts) text.draw(ctx);
+
+      // Draw Boss Warning Overlay
+      if (bossWarningTimer > 0) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(127, 29, 29, 0.4)';
+        ctx.fillRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+
+        if (Math.floor(Date.now() / 200) % 2 === 0) {
+          ctx.shadowColor = '#ff4500';
+          ctx.shadowBlur = 40;
+          ctx.fillStyle = '#ff4500';
+          
+          ctx.font = "bold 150px 'Outfit', sans-serif";
+          ctx.textAlign = 'center';
+          ctx.fillText("!", LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2 - 30);
+
+          ctx.font = "bold 50px 'Outfit', sans-serif";
+          ctx.fillText("BOSS TIKUS TIBA !!", LOGICAL_WIDTH / 2, LOGICAL_HEIGHT / 2 + 60);
+        }
+        ctx.restore();
+      }
 
       // Draw HUD overlays
       drawHUD();

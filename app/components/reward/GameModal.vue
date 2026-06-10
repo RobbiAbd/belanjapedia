@@ -203,7 +203,7 @@ onUnmounted(() => {
 <template>
   <UModal
     v-model:open="open"
-    :ui="{ content: 'w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-5xl rounded-2xl sm:rounded-3xl overflow-hidden' }"
+    :ui="{ content: 'w-screen h-[100dvh] max-w-none sm:w-[calc(100vw-1rem)] sm:h-auto sm:max-w-[1400px] rounded-none sm:rounded-3xl overflow-hidden flex flex-col' }"
   >
     <template #header>
       <div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-100 bg-neutral-50/50 gap-2">
@@ -227,9 +227,9 @@ onUnmounted(() => {
     </template>
 
     <template #body>
-      <div class="flex flex-col gap-6 px-1 py-1">
+      <div class="flex flex-col gap-4 sm:gap-6 px-0 sm:px-1 py-0 sm:py-1 h-full flex-1 overflow-hidden">
         <!-- Tabs Navigation -->
-        <div class="flex border-b border-neutral-100 px-2 sm:px-4 -mt-2 overflow-x-auto scrollbar-none">
+        <div class="flex border-b border-neutral-100 px-2 sm:px-4 shrink-0 overflow-x-auto scrollbar-none">
           <button
             v-for="tab in [
               { id: 'game', label: 'Main Game 🎮' },
@@ -249,10 +249,10 @@ onUnmounted(() => {
         </div>
 
         <!-- Tab Body: Game -->
-        <div v-show="activeTab === 'game'" class="flex flex-col gap-4">
+        <div v-show="activeTab === 'game'" class="flex flex-col gap-0 sm:gap-4 flex-1 overflow-hidden">
           <div
             v-if="!loggedIn"
-            class="w-full h-[min(52vh,420px)] sm:h-[540px] rounded-2xl bg-[#0f172a] border border-neutral-800 flex flex-col items-center justify-center p-6 sm:p-8 text-center relative overflow-hidden"
+            class="w-full h-[min(52vh,420px)] sm:h-[85vh] rounded-2xl bg-[#0f172a] border border-neutral-800 flex flex-col items-center justify-center p-6 sm:p-8 text-center relative overflow-hidden"
           >
             <div class="absolute -top-40 -left-40 size-80 bg-brand-500/10 blur-[120px] rounded-full" />
             <div class="absolute -bottom-40 -right-40 size-80 bg-emerald-500/10 blur-[120px] rounded-full" />
@@ -293,7 +293,7 @@ onUnmounted(() => {
           </div>
 
           <template v-else>
-            <div class="w-full h-[min(52vh,420px)] sm:h-[540px] rounded-2xl overflow-hidden bg-[#0f172a] border border-neutral-800 shadow-inner relative">
+            <div class="w-full flex-1 min-h-[50vh] sm:h-[85vh] rounded-none sm:rounded-2xl overflow-hidden bg-[#0f172a] sm:border border-neutral-800 sm:shadow-inner relative">
               <iframe
                 v-if="open"
                 src="/feline-frenzy.html?v=modal"
@@ -301,7 +301,7 @@ onUnmounted(() => {
                 allow="autoplay"
               />
             </div>
-            <p class="text-[11px] text-neutral-500 text-center -mt-1 flex items-center justify-center gap-1">
+            <p class="text-[11px] text-neutral-500 text-center py-2 sm:pb-0 shrink-0 flex items-center justify-center gap-1 bg-white sm:bg-transparent">
               <UIcon name="i-lucide-info" class="size-3.5" />
               <span>Klik di dalam game terlebih dahulu agar keyboard mendeteksi gerakan kucing.</span>
             </p>
