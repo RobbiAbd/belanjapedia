@@ -33,7 +33,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       appName: 'BelanjaPedia',
-      appUrl: 'http://localhost:3000'
+      appUrl: 'http://localhost:3000',
+      /** Set NUXT_PUBLIC_NGROK_DEMO=true when tunneling via ngrok */
+      ngrokDemo: false
     }
   },
 
