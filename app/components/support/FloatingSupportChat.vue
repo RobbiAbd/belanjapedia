@@ -13,6 +13,9 @@ type ChatMessage = {
 }
 
 const { loggedIn, user } = useUserSession()
+const route = useRoute()
+
+const isProductDetailPage = computed(() => /^\/products\/[^/]+$/.test(route.path))
 
 const isOpen = ref(false)
 const draft = ref('')
@@ -106,7 +109,12 @@ watch(isOpen, (open) => {
 </script>
 
 <template>
-  <div class="fixed bottom-[5.25rem] right-4 lg:bottom-6 lg:right-6 z-40 flex flex-col items-end gap-3">
+  <div
+    class="fixed right-4 z-40 flex flex-col items-end gap-3 lg:bottom-6 lg:right-6"
+    :class="isProductDetailPage
+      ? 'bottom-[calc(10.75rem+env(safe-area-inset-bottom,0px))]'
+      : 'bottom-[calc(6.25rem+env(safe-area-inset-bottom,0px))]'"
+  >
     <Transition
       enter-active-class="transition duration-200 ease-out"
       enter-from-class="opacity-0 translate-y-3 scale-95"
@@ -117,7 +125,10 @@ watch(isOpen, (open) => {
     >
       <div
         v-if="isOpen"
-        class="w-[calc(100vw-2rem)] sm:w-96 h-[min(32rem,calc(100vh-7rem))] bg-white rounded-2xl shadow-2xl border border-neutral-200 flex flex-col overflow-hidden"
+        class="w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-2xl shadow-2xl border border-neutral-200 flex flex-col overflow-hidden"
+        :class="isProductDetailPage
+          ? 'h-[min(32rem,calc(100vh-16rem-env(safe-area-inset-bottom,0px)))]'
+          : 'h-[min(32rem,calc(100vh-11rem-env(safe-area-inset-bottom,0px)))]'"
       >
         <div class="bg-brand-500 text-white px-4 py-3 flex items-center justify-between shrink-0">
           <div class="flex items-center gap-3 min-w-0">
