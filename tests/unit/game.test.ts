@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildGameRewardReference,
+  buildGameRewardTransaction,
   calcEarnedCoins,
-  calcPlayerSpeed,
-  calcEnemySpeed,
   calcEnemySpawnCount,
-  calcProjectileCount
+  calcEnemySpeed,
+  calcGameRewardCoins,
+  calcPlayerSpeed,
+  calcProjectileCount,
+  parseGameTimeToSeconds
 } from '#shared/utils/game'
 
 describe('game calculations', () => {
@@ -69,6 +73,59 @@ describe('game calculations', () => {
       expect(calcEnemySpawnCount(13.9)).toBe(2)
       expect(calcEnemySpawnCount(14.0)).toBe(3)
       expect(calcEnemySpawnCount(35.0)).toBe(6)
+    })
+  })
+
+  describe('parseGameTimeToSeconds', () => {
+    it('should parse mm:ss format to seconds', () => {
+      expect(parseGameTimeToSeconds('01:30')).toBe(90)
+      expect(parseGameTimeToSeconds('02:05')).toBe(125)
+      expect(parseGameTimeToSeconds('00:49')).toBe(49)
+    })
+
+    it('should return 0 for invalid format', () => {
+      expect(parseGameTimeToSeconds('invalid')).toBe(0)
+      expect(parseGameTimeToSeconds('')).toBe(0)
+    })
+  })
+
+  describe('calcGameRewardCoins', () => {
+    it('should return 0 when user is not logged in', () => {
+      expect(calcGameRewardCoins(false, undefined, 500)).toBe(0)
+      expect(calcGameRewardCoins(false, 3, 500)).toBe(0)
+    })
+
+    it('should return 0 when user id is missing', () => {
+      expect(calcGameRewardCoins(true, null, 500)).toBe(0)
+      expect(calcGameRewardCoins(true, undefined, 500)).toBe(0)
+    })
+
+    it('should calculate reward coins for logged in user', () => {
+      expect(calcGameRewardCoins(true, 3, 49)).toBe(0)
+      expect(calcGameRewardCoins(true, 3, 500)).toBe(10)
+      expect(calcGameRewardCoins(true, 3, 2500)).toBe(50)
+    })
+  })
+
+  describe('buildGameRewardReference', () => {
+    it('should build stable reference from game score id', () => {
+      expect(buildGameRewardReference(12)).toBe('game-score-12')
+    })
+  })
+
+  describe('buildGameRewardTransaction', () => {
+    it('should return null when amount is zero or negative', () => {
+      expect(buildGameRewardTransaction(3, 0, 10)).toBeNull()
+      expect(buildGameRewardTransaction(3, -5, 10)).toBeNull()
+    })
+
+    it('should build coin transaction payload for game reward', () => {
+      expect(buildGameRewardTransaction(3, 10, 42)).toEqual({
+        userId: 3,
+        amount: 10,
+        type: 'GAME_REWARD',
+        reference: 'game-score-42'
+      })
     })
   })
 

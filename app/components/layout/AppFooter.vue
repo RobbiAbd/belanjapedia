@@ -31,7 +31,7 @@ const footerLinks = {
           >
             <AppLogo
               variant="horizontal"
-              :height="32"
+              :height="42"
             />
           </NuxtLink>
           <p class="text-sm text-neutral-500">

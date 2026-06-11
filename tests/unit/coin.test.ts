@@ -34,6 +34,16 @@ describe('coin conversions', () => {
   it('memformat tipe transaksi coin', () => {
     expect(formatCoinTransactionType('DAILY_LOGIN')).toBe('Daily Login')
     expect(formatCoinTransactionType('ORDER_PAYMENT')).toBe('Pembayaran Pesanan')
+    expect(formatCoinTransactionType('GAME_REWARD')).toBe('Reward Game')
+  })
+
+  it('coin reward game bisa dipakai untuk diskon checkout', () => {
+    const gameRewardCoins = 10
+    const orderTotal = 50_000
+
+    expect(calcMaxCoinsForOrder(orderTotal, gameRewardCoins)).toBe(10)
+    expect(calcOrderTotalAfterCoins(orderTotal, gameRewardCoins)).toBe(49_000)
+    expect(coinsToPriceUnits(gameRewardCoins)).toBe(1_000)
   })
 })
 

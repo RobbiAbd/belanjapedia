@@ -3,6 +3,49 @@ export function calcEarnedCoins(score: number): number {
   return Math.min(50, Math.floor(score / 50))
 }
 
+export function parseGameTimeToSeconds(timeStr: string): number {
+  const parts = timeStr.split(':')
+  if (parts.length === 2) {
+    return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10)
+  }
+  return 0
+}
+
+export function calcGameRewardCoins(
+  loggedIn: boolean,
+  userId: number | undefined | null,
+  score: number
+): number {
+  if (!loggedIn || userId == null) return 0
+  return calcEarnedCoins(score)
+}
+
+export function buildGameRewardReference(gameScoreId: number): string {
+  return `game-score-${gameScoreId}`
+}
+
+export type GameRewardTransactionData = {
+  userId: number
+  amount: number
+  type: 'GAME_REWARD'
+  reference: string
+}
+
+export function buildGameRewardTransaction(
+  userId: number,
+  amount: number,
+  gameScoreId: number
+): GameRewardTransactionData | null {
+  if (amount <= 0) return null
+
+  return {
+    userId,
+    amount,
+    type: 'GAME_REWARD',
+    reference: buildGameRewardReference(gameScoreId)
+  }
+}
+
 export function calcPlayerSpeed(level: number): number {
   const baseSpeed = 2
   if (level < 1) return baseSpeed

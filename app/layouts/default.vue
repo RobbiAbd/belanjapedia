@@ -78,7 +78,7 @@ const displayCoins = computed(() => user.value?.coins ?? coinBalance.value)
           >
             <AppLogo
               variant="horizontal"
-              :height="34"
+              :height="44"
             />
           </NuxtLink>
 

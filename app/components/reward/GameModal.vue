@@ -203,24 +203,30 @@ onUnmounted(() => {
 <template>
   <UModal
     v-model:open="open"
-    :ui="{ content: 'w-screen h-[100dvh] max-w-none sm:w-[calc(100vw-1rem)] sm:h-auto sm:max-w-[1400px] rounded-none sm:rounded-3xl overflow-hidden flex flex-col' }"
+    :dismissible="false"
+    :close="false"
+    :ui="{
+      content: 'w-screen h-[100dvh] max-w-none sm:w-[calc(100vw-1rem)] sm:h-auto sm:max-w-[1400px] rounded-none sm:rounded-3xl overflow-hidden flex flex-col',
+      header: 'w-full max-w-none p-0 m-0 flex items-stretch shrink-0 border-0 min-h-0',
+      body: 'flex-1 p-0 overflow-hidden flex flex-col min-h-0'
+    }"
   >
     <template #header>
-      <div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-100 bg-neutral-50/50 gap-2">
-        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+      <div class="relative flex items-center w-full min-w-0 px-4 sm:px-6 pt-[max(1rem,env(safe-area-inset-top))] pb-3 sm:pt-5 sm:pb-4 border-b border-neutral-100 bg-neutral-50/50 pr-14 sm:pr-16">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 w-full">
           <img src="/images/belanjapedia_icon.png" alt="Logo Kucing" class="size-8 sm:size-9 object-contain shrink-0" />
-          <div class="min-w-0">
+          <div class="min-w-0 flex-1">
             <h2 class="text-base sm:text-xl font-black text-neutral-900 tracking-tight flex flex-wrap items-center gap-1.5">
               Feline Frenzy <span class="text-[10px] sm:text-xs font-semibold px-2 py-0.5 bg-brand-100 text-brand-700 rounded-full">Mini-Game</span>
             </h2>
-            <p class="text-[11px] sm:text-xs text-neutral-500 line-clamp-2 sm:line-clamp-none">Mainkan game, buka lencana, dan dapatkan Koin BelanjaPedia!</p>
+            <p class="text-[11px] sm:text-xs text-neutral-500">Mainkan game, buka lencana, dan dapatkan Koin BelanjaPedia!</p>
           </div>
         </div>
         <UButton
           icon="i-lucide-x"
           variant="ghost"
           color="neutral"
-          class="rounded-full"
+          class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 rounded-full shrink-0"
           @click="open = false"
         />
       </div>
@@ -455,6 +461,10 @@ onUnmounted(() => {
                 <span class="text-brand-500">•</span>
                 <span>Anda harus <strong>Login</strong> menggunakan akun BelanjaPedia saat bermain untuk menyimpan koin ke saldo akun Anda.</span>
               </li>
+              <li class="flex items-start gap-2">
+                <span class="text-brand-500">•</span>
+                <span>Koin tercatat di <strong>Riwayat Coin</strong> dan bisa dipakai saat <strong>checkout</strong> (1 coin = Rp1).</span>
+              </li>
             </ul>
           </div>
 
@@ -462,7 +472,7 @@ onUnmounted(() => {
             ⚠️ Anda belum login. Silakan login terlebih dahulu untuk mendapatkan koin belanja!
           </p>
           <p v-else class="text-sm font-semibold text-green-600">
-            ✅ Anda sudah login. Semua koin yang didapatkan akan langsung masuk ke saldo Anda!
+            ✅ Anda sudah login. Koin masuk ke saldo, tercatat di riwayat, dan siap dipakai belanja!
           </p>
         </div>
       </div>

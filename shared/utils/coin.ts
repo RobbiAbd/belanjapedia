@@ -44,7 +44,7 @@ export function formatCoins(coins: number): string {
   return `${new Intl.NumberFormat('id-ID').format(coins)} coin`
 }
 
-export type CoinTransactionTypeLabel = 'DAILY_LOGIN' | 'ORDER_PAYMENT'
+export type CoinTransactionTypeLabel = 'DAILY_LOGIN' | 'ORDER_PAYMENT' | 'GAME_REWARD'
 
 export function formatCoinTransactionType(type: CoinTransactionTypeLabel | string): string {
   switch (type) {
@@ -52,6 +52,8 @@ export function formatCoinTransactionType(type: CoinTransactionTypeLabel | strin
       return 'Daily Login'
     case 'ORDER_PAYMENT':
       return 'Pembayaran Pesanan'
+    case 'GAME_REWARD':
+      return 'Reward Game'
     default:
       return type
   }

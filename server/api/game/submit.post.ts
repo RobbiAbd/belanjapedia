@@ -1,7 +1,9 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
 import { z } from 'zod'
-import { calcEarnedCoins } from '#shared/utils/game'
+import {
+  buildGameRewardTransaction,
+  calcGameRewardCoins,
+  parseGameTimeToSeconds
+} from '#shared/utils/game'
 
 const submitSchema = z.object({
   score: z.number().int().min(0),
@@ -9,16 +11,6 @@ const submitSchema = z.object({
   time: z.string(),
   kills: z.number().int().min(0)
 })
-
-interface LeaderboardEntry {
-  userId?: number
-  name: string
-  score: number
-  level: number
-  time: string
-  kills: number
-  date: string
-}
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
@@ -35,22 +27,38 @@ export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
   const loggedIn = !!session.user
   const userId = session.user?.id
+  const timeInSecs = parseGameTimeToSeconds(time)
+  const earnedCoins = calcGameRewardCoins(loggedIn, userId, score)
 
-  let earnedCoins = 0
   let newBalance = 0
+  let updatedSessionUser: ReturnType<typeof mapUserToSession> | null = null
 
-  // 1. If user is logged in, calculate and award coins
-  if (loggedIn && userId) {
-    // Reward calculation: 1 coin per 50 game points, maximum 50 coins per play session
-    earnedCoins = calcEarnedCoins(score)
+  const newScore = await prisma.$transaction(async (tx) => {
+    const gameScore = await tx.gameScore.create({
+      data: {
+        userId: loggedIn && userId ? userId : null,
+        name: session.user?.name || 'Guest Player',
+        score,
+        level,
+        time,
+        timeInSecs,
+        kills
+      }
+    })
 
-    if (earnedCoins > 0) {
-      const dbUser = await prisma.user.findFirst({
-        where: { id: userId, deletedAt: null }
+    if (loggedIn && userId) {
+      const dbUser = await tx.user.findFirst({
+        where: { id: userId, deletedAt: null },
+        select: { coins: true }
       })
 
-      if (dbUser) {
-        const updatedUser = await prisma.user.update({
+      if (!dbUser) {
+        newBalance = 0
+        return gameScore
+      }
+
+      if (earnedCoins > 0) {
+        const updatedUser = await tx.user.update({
           where: { id: userId },
           data: {
             coins: { increment: earnedCoins }
@@ -65,48 +73,28 @@ export default defineEventHandler(async (event) => {
           }
         })
 
+        const rewardTransaction = buildGameRewardTransaction(userId, earnedCoins, gameScore.id)
+        if (rewardTransaction) {
+          await tx.coinTransaction.create({ data: rewardTransaction })
+        }
+
         newBalance = updatedUser.coins
-
-        // Update the active session
-        const sessionUser = mapUserToSession(updatedUser)
-        await replaceUserSession(event, {
-          user: sessionUser,
-          loggedInAt: session.loggedInAt ?? new Date()
-        })
+        updatedSessionUser = mapUserToSession(updatedUser)
+      } else {
+        newBalance = dbUser.coins
       }
-    } else {
-      const dbUser = await prisma.user.findFirst({
-        where: { id: userId, deletedAt: null },
-        select: { coins: true }
-      })
-      newBalance = dbUser?.coins ?? 0
     }
-  }
 
-  // 2. Save to database
-  const parseTimeToSeconds = (timeStr: string): number => {
-    const parts = timeStr.split(':')
-    if (parts.length === 2) {
-      return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10)
-    }
-    return 0
-  }
-
-  const timeInSecs = parseTimeToSeconds(time)
-
-  const newScore = await prisma.gameScore.create({
-    data: {
-      userId: loggedIn && userId ? userId : null,
-      name: session.user?.name || 'Guest Player',
-      score,
-      level,
-      time,
-      timeInSecs,
-      kills
-    }
+    return gameScore
   })
 
-  // Get top 7 for gameover screen
+  if (updatedSessionUser) {
+    await replaceUserSession(event, {
+      user: updatedSessionUser,
+      loggedInAt: session.loggedInAt ?? new Date()
+    })
+  }
+
   const leaderboard = await prisma.gameScore.findMany({
     take: 7,
     orderBy: [
@@ -128,9 +116,10 @@ export default defineEventHandler(async (event) => {
     earnedCoins,
     newBalance,
     loggedIn,
+    gameScoreId: newScore.id,
     leaderboard
-  }, earnedCoins > 0 
-    ? `Skor dikirim! Selamat, Anda mendapatkan +${earnedCoins} koin BelanjaPedia!` 
+  }, earnedCoins > 0
+    ? `Skor dikirim! Selamat, Anda mendapatkan +${earnedCoins} koin BelanjaPedia!`
     : 'Skor berhasil dikirim ke database!'
   )
 })
